@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+</head>
+<body>
+<section>
+    <h1>Xin chào bạn <span th:text="${username}">Student</span></h1>
+    <p>Bạn đã đăng nhập với vai trò SINH VIÊN.</p>
+    <form action="/logout" method="post">
+        <button type="submit">Đăng xuất</button>
+    </form>
+</section>
+</body>
+</html>
+
+

@@ -1,0 +1,42 @@
+.panel {
+    margin: 4rem auto;
+    max-width: 520px;
+    background: #f1f5ff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.panel h1 {
+    margin-bottom: 0.5rem;
+    color: #1f2a69;
+}
+
+.panel p {
+    margin-bottom: 2rem;
+}
+
+.panel .actions {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+    align-items: center;
+}
+
+.panel .actions a,
+.panel .actions button {
+    padding: 0.6rem 1rem;
+    background: #3572EF;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.panel form {
+    margin: 0;
+}
+

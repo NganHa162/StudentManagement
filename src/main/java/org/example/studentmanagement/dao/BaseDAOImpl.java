@@ -3,7 +3,7 @@ package org.example.studentmanagement.dao;
 import java.util.List;
 
 
-public class BaseDAOImpl<T, ID> implements BaseDAO<T, ID> {
+public abstract class BaseDAOImpl<T, ID> implements BaseDAO<T, ID> {
 
     protected Class<T> getEntityClass() {
 
@@ -12,27 +12,27 @@ public class BaseDAOImpl<T, ID> implements BaseDAO<T, ID> {
 
 
     @Override
-    public void save(Object entity) {
-
+    public void save(T entity) {
+        throw new UnsupportedOperationException("save not implemented");
     }
 
     @Override
-    public Object findById(Object o) {
-        return null;
+    public T findById(ID id) {
+        throw new UnsupportedOperationException("findById not implemented");
     }
 
     @Override
-    public List findAll() {
-        return List.of();
+    public List<T> findAll() {
+        throw new UnsupportedOperationException("findAll not implemented");
     }
 
     @Override
-    public void deleteById(Object o) {
-
+    public void deleteById(ID id) {
+        throw new UnsupportedOperationException("deleteById not implemented");
     }
 
     @Override
-    public void delete(Object entity) {
-
+    public void delete(T entity) {
+        throw new UnsupportedOperationException("delete not implemented");
     }
 }

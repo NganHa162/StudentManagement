@@ -6,7 +6,11 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+<!--s
+    <link rel="stylesheet" th:href="@{/css/login/login-form.css}">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+-->
     <link rel="stylesheet" href="../../static/css/login/login-form.css">
 
     <link rel="stylesheet"
@@ -24,15 +28,15 @@
 
         <h3>Login</h3>
 
-        <div class="error">
-            Invalid username or password 
-        </div>
-
-        <div id="logout">
-            You have been logged out! 
-        </div>
-
         <form action="#" method="POST">
+            <div class="error">
+                Invalid username or password 
+            </div>
+
+            <div id="logout">
+                You have been logged out! 
+            </div>
+
             <div class="form-input-item">
                 <div>Username: </div>
                 <input type="text" name="username" placeholder="Enter username">
@@ -50,6 +54,9 @@
         <!-- static, please change to go to registration page -->
         <div class="bottom-link">
             <span>Haven't had an account?</span>
+            <!--
+            <a th:href="@{/register/showRegistrationForm}">click here to register!</a> 
+        -->
             <a href="#">click here to register!</a>
         </div>
     </div>

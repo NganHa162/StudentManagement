@@ -1,33 +1,31 @@
 package org.example.studentmanagement.entity;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 public class Assignment {
     private int id;
-    
-    @NotNull(message = "is required")
-    @Size(min = 1, message = "is required")
-    private String title;
-    
-    private String description;
-    
-    @NotNull(message = "is required")
-    private String dueDate;
-    
     private int courseId;
-    private int daysRemaining;
+    private String title;
+    private String description;
+    private String dueDate;
+    private double maxScore;
+    private String createdDate;
+    private String status; // e.g., "active", "closed", "draft"
+    private int createdByTeacherId;
 
     public Assignment() {
     }
 
-    public Assignment(int id, String title, String description, String dueDate, int courseId, int daysRemaining) {
+    public Assignment(int id, int courseId, String title, String description, 
+                     String dueDate, double maxScore, String createdDate, 
+                     String status, int createdByTeacherId) {
         this.id = id;
+        this.courseId = courseId;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
-        this.courseId = courseId;
-        this.daysRemaining = daysRemaining;
+        this.maxScore = maxScore;
+        this.createdDate = createdDate;
+        this.status = status;
+        this.createdByTeacherId = createdByTeacherId;
     }
 
     public int getId() {
@@ -36,6 +34,14 @@ public class Assignment {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public String getTitle() {
@@ -62,20 +68,44 @@ public class Assignment {
         this.dueDate = dueDate;
     }
 
-    public int getCourseId() {
-        return courseId;
+    public double getMaxScore() {
+        return maxScore;
     }
 
-    public void setCourseId(int courseId) {
-        this.courseId = courseId;
+    public void setMaxScore(double maxScore) {
+        this.maxScore = maxScore;
     }
 
-    public int getDaysRemaining() {
-        return daysRemaining;
+    public String getCreatedDate() {
+        return createdDate;
     }
 
-    public void setDaysRemaining(int daysRemaining) {
-        this.daysRemaining = daysRemaining;
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getCreatedByTeacherId() {
+        return createdByTeacherId;
+    }
+
+    public void setCreatedByTeacherId(int createdByTeacherId) {
+        this.createdByTeacherId = createdByTeacherId;
+    }
+
+    public boolean isActive() {
+        return "active".equalsIgnoreCase(this.status);
+    }
+
+    public boolean isClosed() {
+        return "closed".equalsIgnoreCase(this.status);
     }
 
     @Override
@@ -84,10 +114,11 @@ public class Assignment {
             return true;
         }
 
-        if (!(comparedObject instanceof Assignment compared)) {
+        if (!(comparedObject instanceof Assignment)) {
             return false;
         }
 
+        Assignment compared = (Assignment) comparedObject;
         return this.id == compared.id;
     }
 }

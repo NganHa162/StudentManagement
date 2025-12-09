@@ -24,7 +24,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 .findFirst()
                 .orElse("/login?error");
 
-        LoginResponse loginResponse = new LoginResponse("Đăng nhập thành công", redirectUrl);
+        LoginResponse loginResponse = new LoginResponse("Login successful", redirectUrl);
         request.getSession().setAttribute("loginResponse", loginResponse);
         response.sendRedirect(redirectUrl);
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel</title>
@@ -7,13 +7,13 @@
 </head>
 <body>
 <section class="panel">
-    <h1>Xin chào, <span th:text="${username}">Admin</span></h1>
-    <p>Bạn đã đăng nhập với vai trò ADMIN.</p>
+    <h1>Welcome, <span th:text="${username}">Admin</span></h1>
+    <p>You are logged in as ADMIN.</p>
     <div class="actions">
-        <a href="/teacher/dashboard">Trang giảng viên</a>
-        <a href="/student/dashboard">Trang sinh viên</a>
+        <a href="/teacher/dashboard">Teacher Page</a>
+        <a href="/student/dashboard">Student Page</a>
         <form action="/logout" method="post">
-            <button type="submit">Đăng xuất</button>
+            <button type="submit">Logout</button>
         </form>
     </div>
 </section>

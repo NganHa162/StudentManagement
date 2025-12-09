@@ -1,8 +1,5 @@
 package org.example.studentmanagement.security;
 
-import org.example.studentmanagement.service.AdminService;
-import org.example.studentmanagement.service.StudentService;
-import org.example.studentmanagement.service.TeacherService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,14 +23,10 @@ public class DemoSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                       AdminService adminService,
-                                                       TeacherService teacherService,
-                                                       StudentService studentService,
+                                                       CompositeUserDetailsService compositeUserDetailsService,
                                                        PasswordEncoder passwordEncoder) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder.userDetailsService(adminService).passwordEncoder(passwordEncoder);
-        builder.userDetailsService(teacherService).passwordEncoder(passwordEncoder);
-        builder.userDetailsService(studentService).passwordEncoder(passwordEncoder);
+        builder.userDetailsService(compositeUserDetailsService).passwordEncoder(passwordEncoder);
         return builder.build();
     }
 
@@ -42,7 +35,7 @@ public class DemoSecurityConfig {
                                                    CustomAuthenticationSuccessHandler successHandler) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/css/**", "/login").permitAll()
+                        .requestMatchers("/", "/css/**", "/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/teacher/**").hasAnyRole("ADMIN", "TEACHER")
                         .requestMatchers("/student/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")

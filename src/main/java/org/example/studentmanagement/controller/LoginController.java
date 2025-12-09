@@ -10,6 +10,11 @@ public class LoginController {
 
     private final LoginUI loginUI = new LoginUI();
 
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
+    }
+
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("loginUI", loginUI);

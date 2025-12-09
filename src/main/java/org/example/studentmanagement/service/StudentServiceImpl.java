@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Student student = findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy sinh viên: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Student not found: " + username));
         return User.withUsername(student.getUserName())
                 .password(student.getPassword())
                 .roles("STUDENT")

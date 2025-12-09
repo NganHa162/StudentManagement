@@ -26,7 +26,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Admin admin = findByUserName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy admin: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Admin not found: " + username));
         return User.withUsername(admin.getUserName())
                 .password(admin.getPassword())
                 .roles("ADMIN")

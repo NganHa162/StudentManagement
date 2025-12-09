@@ -1,21 +1,23 @@
 package org.example.studentmanagement.entity;
 
-public class StudentCourseDetail {
+import java.util.List;
+
+public class StudentCourseDetails {
     private int id;
     private int studentId;
     private int courseId;
-    private String enrollmentDate;
-    private String status; // e.g., "enrolled", "completed", "dropped"
+    private GradeDetails gradeDetails;
+    private List<Assignment> assignments;
 
-    public StudentCourseDetail() {
+    public StudentCourseDetails() {
     }
 
-    public StudentCourseDetail(int id, int studentId, int courseId, String enrollmentDate, String status) {
+    public StudentCourseDetails(int id, int studentId, int courseId, GradeDetails gradeDetails, List<Assignment> assignments) {
         this.id = id;
         this.studentId = studentId;
         this.courseId = courseId;
-        this.enrollmentDate = enrollmentDate;
-        this.status = status;
+        this.gradeDetails = gradeDetails;
+        this.assignments = assignments;
     }
 
     public int getId() {
@@ -42,20 +44,20 @@ public class StudentCourseDetail {
         this.courseId = courseId;
     }
 
-    public String getEnrollmentDate() {
-        return enrollmentDate;
+    public GradeDetails getGradeDetails() {
+        return gradeDetails;
     }
 
-    public void setEnrollmentDate(String enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
+    public void setGradeDetails(GradeDetails gradeDetails) {
+        this.gradeDetails = gradeDetails;
     }
 
-    public String getStatus() {
-        return status;
+    public List<Assignment> getAssignments() {
+        return assignments;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setAssignments(List<Assignment> assignments) {
+        this.assignments = assignments;
     }
 
     @Override
@@ -64,11 +66,11 @@ public class StudentCourseDetail {
             return true;
         }
 
-        if (!(comparedObject instanceof StudentCourseDetail)) {
+        if (!(comparedObject instanceof StudentCourseDetails)) {
             return false;
         }
 
-        StudentCourseDetail compared = (StudentCourseDetail) comparedObject;
+        StudentCourseDetails compared = (StudentCourseDetails) comparedObject;
         return this.id == compared.id;
     }
 }

@@ -1,58 +1,134 @@
 package org.example.studentmanagement.dao;
 
 import org.example.studentmanagement.entity.Teacher;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements TeacherDAO{
+    
+    private final DataSource dataSource;
 
-    private final List<Teacher> teachers = new ArrayList<>();
-
-    public TeacherDAOImpl(PasswordEncoder passwordEncoder) {
-        teachers.add(new Teacher(200, "teacher1", passwordEncoder.encode("password"),
-                "Hung", "Pham", "hung.pham@example.com", new ArrayList<>()));
-        teachers.add(new Teacher(201, "teacher2", passwordEncoder.encode("password"),
-                "An", "Hoang", "an.hoang@example.com", new ArrayList<>()));
+    @Autowired
+    public TeacherDAOImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
-    public void save(Teacher entity) {
-        teachers.removeIf(teacher -> teacher.getId() == entity.getId());
-        teachers.add(entity);
-    }
-
-    @Override
-    public Teacher findById(Integer id) {
-        return teachers.stream()
-                .filter(teacher -> teacher.getId() == id)
-                .findFirst()
-                .orElse(null);
+    public void save(Teacher teacher) {
+        String sql;
+        if (teacher.getId() == 0) {
+            // Insert new teacher
+            sql = "INSERT INTO teachers (username, password, first_name, last_name, email) VALUES (?, ?, ?, ?, ?)";
+        } else {
+            // Update existing teacher
+            sql = "UPDATE teachers SET username = ?, password = ?, first_name = ?, last_name = ?, email = ? WHERE id = ?";
+        }
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            pstmt.setString(1, teacher.getUserName());
+            pstmt.setString(2, teacher.getPassword());
+            pstmt.setString(3, teacher.getFirstName());
+            pstmt.setString(4, teacher.getLastName());
+            pstmt.setString(5, teacher.getEmail());
+            
+            if (teacher.getId() != 0) {
+                pstmt.setInt(6, teacher.getId());
+            }
+            
+            pstmt.executeUpdate();
+            
+            // If it's a new teacher, get the generated ID
+            if (teacher.getId() == 0) {
+                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        teacher.setId(rs.getInt(1));
+                    }
+                }
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Error saving teacher: " + e.getMessage(), e);
+        }
     }
 
     @Override
     public List<Teacher> findAll() {
-        return List.copyOf(teachers);
+        List<Teacher> teachers = new ArrayList<>();
+        String sql = "SELECT id, username, password, first_name, last_name, email FROM teachers";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            while (rs.next()) {
+                Teacher teacher = new Teacher();
+                teacher.setId(rs.getInt("id"));
+                teacher.setUserName(rs.getString("username"));
+                teacher.setPassword(rs.getString("password"));
+                teacher.setFirstName(rs.getString("first_name"));
+                teacher.setLastName(rs.getString("last_name"));
+                teacher.setEmail(rs.getString("email"));
+                // Note: Courses will need to be loaded separately if needed
+                teachers.add(teacher);
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding all teachers: " + e.getMessage(), e);
+        }
+        
+        return teachers;
+    }
+
+    @Override
+    public Teacher findById(Integer id) {
+        String sql = "SELECT id, username, password, first_name, last_name, email FROM teachers WHERE id = ?";
+        Teacher teacher = null;
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    teacher = new Teacher();
+                    teacher.setId(rs.getInt("id"));
+                    teacher.setUserName(rs.getString("username"));
+                    teacher.setPassword(rs.getString("password"));
+                    teacher.setFirstName(rs.getString("first_name"));
+                    teacher.setLastName(rs.getString("last_name"));
+                    teacher.setEmail(rs.getString("email"));
+                    // Note: Courses will need to be loaded separately if needed
+                }
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding teacher by id: " + e.getMessage(), e);
+        }
+        
+        return teacher;
     }
 
     @Override
     public void deleteById(Integer id) {
-        teachers.removeIf(teacher -> teacher.getId() == id);
-    }
-
-    @Override
-    public void delete(Teacher entity) {
-        teachers.remove(entity);
-    }
-
-    @Override
-    public Optional<Teacher> findByUserName(String userName) {
-        return teachers.stream()
-                .filter(teacher -> teacher.getUserName().equalsIgnoreCase(userName))
-                .findFirst();
+        String sql = "DELETE FROM teachers WHERE id = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting teacher by id: " + e.getMessage(), e);
+        }
     }
 }

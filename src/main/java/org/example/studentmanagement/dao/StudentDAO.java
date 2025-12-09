@@ -8,4 +8,3 @@ public interface StudentDAO extends BaseDAO<Student, Integer> {
     Optional<Student> findByUserName(String userName);
 }
 
-

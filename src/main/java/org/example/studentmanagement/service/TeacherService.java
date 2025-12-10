@@ -11,6 +11,7 @@ public interface TeacherService extends UserDetailsService {
     List<Teacher> findAllTeachers();
     void save(Teacher teacher);
     void deleteById(int id);
+    void deleteTeacherById(int id);
     Optional<Teacher> findByUserName(String userName);
 }
 

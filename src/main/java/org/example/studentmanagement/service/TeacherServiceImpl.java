@@ -42,6 +42,11 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    public void deleteTeacherById(int id) {
+        teacherDAO.deleteById(id);
+    }
+
+    @Override
     public Optional<Teacher> findByUserName(String userName) {
         return teacherDAO.findByUserName(userName);
     }

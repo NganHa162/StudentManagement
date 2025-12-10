@@ -8,5 +8,6 @@ public interface CourseService {
     List<Course> findAllCourses();
     void save(Course course);
     void deleteById(int id);
+    void deleteCourseById(int id);
 }
 

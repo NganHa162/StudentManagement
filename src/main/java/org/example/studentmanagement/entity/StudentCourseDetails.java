@@ -60,6 +60,17 @@ public class StudentCourseDetails {
         this.assignments = assignments;
     }
 
+    public Assignment getAssignmentById(int assignmentId) {
+        if (assignments != null) {
+            for (Assignment assignment : assignments) {
+                if (assignment.getId() == assignmentId) {
+                    return assignment;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object comparedObject) {
         if (this == comparedObject) {

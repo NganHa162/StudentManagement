@@ -10,6 +10,7 @@ public class Assignment {
     private String createdDate;
     private String status; // e.g., "active", "closed", "draft"
     private int createdByTeacherId;
+    private int daysRemaining; // calculated field for days until due date
 
     public Assignment() {
     }
@@ -106,6 +107,14 @@ public class Assignment {
 
     public boolean isClosed() {
         return "closed".equalsIgnoreCase(this.status);
+    }
+
+    public int getDaysRemaining() {
+        return daysRemaining;
+    }
+
+    public void setDaysRemaining(int daysRemaining) {
+        this.daysRemaining = daysRemaining;
     }
 
     @Override

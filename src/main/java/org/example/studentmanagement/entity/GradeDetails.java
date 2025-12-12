@@ -11,6 +11,7 @@ public class GradeDetails {
     private String feedback;
     private String gradedDate;
     private int gradedByTeacherId;
+    private StudentCourseDetails studentCourseDetails;
 
     public GradeDetails() {
     }
@@ -108,6 +109,14 @@ public class GradeDetails {
 
     public void setGradedByTeacherId(int gradedByTeacherId) {
         this.gradedByTeacherId = gradedByTeacherId;
+    }
+
+    public StudentCourseDetails getStudentCourseDetails() {
+        return studentCourseDetails;
+    }
+
+    public void setStudentCourseDetails(StudentCourseDetails studentCourseDetails) {
+        this.studentCourseDetails = studentCourseDetails;
     }
 
     public double getPercentage() {

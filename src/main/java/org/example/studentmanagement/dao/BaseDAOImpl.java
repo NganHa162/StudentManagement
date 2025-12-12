@@ -3,7 +3,7 @@ package org.example.studentmanagement.dao;
 import java.util.List;
 
 
-public class BaseDAOImpl<T, ID> implements BaseDAO<T, ID> {
+public abstract class BaseDAOImpl<T, ID> implements BaseDAO<T, ID> {
 
     protected Class<T> getEntityClass() {
         return null;

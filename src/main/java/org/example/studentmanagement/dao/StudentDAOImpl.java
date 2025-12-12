@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class StudentDAOImpl extends BaseDAOImpl<Student, Integer> implements StudentDAO{
@@ -130,5 +131,34 @@ public class StudentDAOImpl extends BaseDAOImpl<Student, Integer> implements Stu
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting student by id: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Optional<Student> findByUserName(String userName) {
+        String sql = "SELECT id, username, password, first_name, last_name, email FROM students WHERE username = ?";
+        
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, userName);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Student student = new Student();
+                    student.setId(rs.getInt("id"));
+                    student.setUserName(rs.getString("username"));
+                    student.setPassword(rs.getString("password"));
+                    student.setFirstName(rs.getString("first_name"));
+                    student.setLastName(rs.getString("last_name"));
+                    student.setEmail(rs.getString("email"));
+                    return Optional.of(student);
+                }
+            }
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding student by username: " + e.getMessage(), e);
+        }
+        
+        return Optional.empty();
     }
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/admin/admin-panel.css}">
+</head>
+<body>
+<section class="panel">
+    <h1>Welcome, <span th:text="${username}">Admin</span></h1>
+    <p>You are logged in as ADMIN.</p>
+    <div class="actions">
+        <a href="/teacher/dashboard">Teacher Page</a>
+        <a href="/student/dashboard">Student Page</a>
+        <form action="/logout" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>
+

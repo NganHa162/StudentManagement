@@ -2,9 +2,8 @@ package org.example.studentmanagement.dao;
 
 import org.example.studentmanagement.entity.Teacher;
 
+import java.util.Optional;
+
 public interface TeacherDAO extends BaseDAO<Teacher, Integer>{
-    // Inherits all CRUD methods from BaseDAO
-    // Can add custom methods here if needed, for example:
-    // Teacher findByUsername(String username);
-    // Teacher findByEmail(String email);
+    Optional<Teacher> findByUserName(String userName);
 }

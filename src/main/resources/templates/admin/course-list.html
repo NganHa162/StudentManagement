@@ -3,16 +3,17 @@
 <html>
 
 <head>
-	<title>Add Course</title>
+	<title>Course List</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
-	 
+		 
 	<link rel="stylesheet" th:href="@{/css/navbar.css}">
+	
+	<link rel="stylesheet" th:href="@{/css/table.css}">
 	
 	<link rel="stylesheet" th:href="@{/css/button.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/admin/add-course.css}">
+	<link rel="stylesheet" th:href="@{/css/admin/course-list.css}">
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -50,19 +51,44 @@
 	
 	<div class="content">
 	
-	<h3>Add Course</h3>
-	<div th:if="${listSize != 0}">
-	<form action="#" th:action="@{/admin/students/{studentId}/addCourse/save(studentId=${student.id})}">
-		<select th:name="courseId">
-			<option th:each="c : ${courses}"
-                    th:value="${c.id}"
-                    th:text="${c.code + ' ' + c.name}" />			
-		</select>
-		<button type="submit">Add</button>
-	</form>
-	</div>
+	<h3>Course List</h3>
 	
-	<div th:if="${listSize == 0}">There are no courses available to add.</div>
+	<div class="container">
+	
+	<div th:if="${courses.size() == 0}">There are no courses.</div>
+	
+	<div th:if="${courses.size() != 0}">
+	<table>
+	
+		<thead>
+			<tr>
+				<th id="table-top-left">Code</th>
+				<th>Name</th>
+				<th>Teacher</th>
+				<th id="table-top-right" class="short-col">Action</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<tr th:each="course : ${courses}">
+				<td th:text="${course.code}">
+				<td th:text="${course.name}">
+				<td th:text="${course.teacher.firstName + ' ' + course.teacher.lastName}">
+				<td class="short-col">
+					<a class="button" th:href="@{/admin/courses/{courseId}/students(courseId=${course.id})}">
+					<i class="fa fa-eye"></i> <span>View</span></a>
+					<a class="button delete-button" th:href="@{/admin/courses/delete(courseId=${course.id})}"
+							onclick="if (!(confirm('Are you sure you want to delete?'))) return false">
+					<i class="fa fa-trash"></i><span>Delete<span></a>
+				</td>
+			</tr>
+				
+		</tbody>
+		
+	</table>
+	</div>
+	<a class="button add-button" th:href="@{/admin/addCourse}">Create New Course</a>
+	</div>
 	
 	</div>
 </body>

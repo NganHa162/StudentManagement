@@ -3,18 +3,16 @@
 <html>
 
 <head>
-	<title>Add Course</title>
+	<title>Add New Course</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
 	 
 	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/button.css}">
-	
-	<link rel="stylesheet" th:href="@{/css/admin/add-course.css}">
+	<link rel="stylesheet" th:href="@{/css/admin/course-form.css}">
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	
 </head>
 
 <body>
@@ -50,20 +48,34 @@
 	
 	<div class="content">
 	
-	<h3>Add Course</h3>
-	<div th:if="${listSize != 0}">
-	<form action="#" th:action="@{/admin/students/{studentId}/addCourse/save(studentId=${student.id})}">
-		<select th:name="courseId">
-			<option th:each="c : ${courses}"
-                    th:value="${c.id}"
-                    th:text="${c.code + ' ' + c.name}" />			
+	<div class="container">
+	<h3>Add New Course</h3>
+	
+	<form action="#" th:action="@{/admin/saveCourse}" th:object="${course}" method="POST">
+		
+		<input type="hidden" th:field="*{id}">
+		
+		<div class="form-input-item">
+		<div>Course code:</div> <input type="text" th:field="*{code}">
+		<p th:if="${#fields.hasErrors('code')}" class="error">Please enter the course code!</p>
+		</div>
+		
+		<div class="form-input-item">
+		<div>Course name:</div> <input type="text" th:field="*{name}">
+		<p th:if="${#fields.hasErrors('name')}" class="error">Please enter the name!</p>
+		</div>
+		
+		 <div class="form-input-item">Teacher: </div>
+		 <select th:name="teacherId">
+			<option th:each="t : ${teachers}"
+                    th:value="${t.id}"
+                    th:text="${t.firstName + ' ' + t.lastName}" />			
 		</select>
+		
 		<button type="submit">Add</button>
 	</form>
+	
 	</div>
-	
-	<div th:if="${listSize == 0}">There are no courses available to add.</div>
-	
 	</div>
 </body>
 

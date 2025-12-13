@@ -1,7 +1,9 @@
 package org.example.studentmanagement.config;
 
+import org.example.studentmanagement.dao.AdminDAO;
 import org.example.studentmanagement.dao.StudentDAO;
 import org.example.studentmanagement.dao.TeacherDAO;
+import org.example.studentmanagement.entity.Admin;
 import org.example.studentmanagement.entity.Student;
 import org.example.studentmanagement.entity.Teacher;
 import org.springframework.boot.CommandLineRunner;
@@ -19,11 +21,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private final StudentDAO studentDAO;
     private final TeacherDAO teacherDAO;
+    private final AdminDAO adminDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(StudentDAO studentDAO, TeacherDAO teacherDAO, PasswordEncoder passwordEncoder) {
+    public DataInitializer(StudentDAO studentDAO, TeacherDAO teacherDAO, AdminDAO adminDAO, PasswordEncoder passwordEncoder) {
         this.studentDAO = studentDAO;
         this.teacherDAO = teacherDAO;
+        this.adminDAO = adminDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,6 +43,11 @@ public class DataInitializer implements CommandLineRunner {
             if (teacherDAO.findAll().isEmpty()) {
                 initializeTeachers();
                 System.out.println("Test data created for Teachers");
+            }
+
+            if (adminDAO.findAll().isEmpty()) {
+                initializeAdmins();
+                System.out.println("Test data created for Admins");
             }
         } catch (Exception e) {
             System.err.println("Warning: Could not initialize test data. Database connection may not be available.");
@@ -62,6 +71,12 @@ public class DataInitializer implements CommandLineRunner {
         createTeacher("teacher2", "teacher123", "Hoang", "Van E", "teacher2@example.com");
     }
 
+    private void initializeAdmins() {
+        // Create 1 test admin
+        // Password: "admin123"
+        createAdmin("admin", "admin123", "Admin", "User", "admin@example.com");
+    }
+
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
         Student student = new Student();
         student.setUserName(username);
@@ -82,6 +97,16 @@ public class DataInitializer implements CommandLineRunner {
         teacher.setEmail(email);
         teacher.setCourses(new ArrayList<>());
         teacherDAO.save(teacher);
+    }
+
+    private void createAdmin(String username, String password, String firstName, String lastName, String email) {
+        Admin admin = new Admin();
+        admin.setUserName(username);
+        admin.setPassword(passwordEncoder.encode(password));
+        admin.setFirstName(firstName);
+        admin.setLastName(lastName);
+        admin.setEmail(email);
+        adminDAO.save(admin);
     }
 }
 

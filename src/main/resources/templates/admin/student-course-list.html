@@ -3,16 +3,18 @@
 <html>
 
 <head>
-	<title>Add Course</title>
+	<title>Student Course List</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	 
 	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
+	<link rel="stylesheet" th:href="@{/css/table.css}">
+	
 	<link rel="stylesheet" th:href="@{/css/button.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/admin/add-course.css}">
+	<link rel="stylesheet" th:href="@{/css/admin/student-course-list.css}">
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -48,21 +50,45 @@
 		</ul>
 	</div>
 	
+	
+	<h3 th:text="${student.firstName + ' ' + student.lastName + ' Course List'}"></h3>
+	
 	<div class="content">
 	
-	<h3>Add Course</h3>
-	<div th:if="${listSize != 0}">
-	<form action="#" th:action="@{/admin/students/{studentId}/addCourse/save(studentId=${student.id})}">
-		<select th:name="courseId">
-			<option th:each="c : ${courses}"
-                    th:value="${c.id}"
-                    th:text="${c.code + ' ' + c.name}" />			
-		</select>
-		<button type="submit">Add</button>
-	</form>
+	<div th:if="${courses.size() == 0}">There are no courses. Please add new courses clicking on the button below.</div>
+	
+	<div th:if="${courses.size() != 0}">
+	
+	<table>
+		<thead>
+			<tr>
+				<th id="table-top-left">Course Code</th>
+				<th>Course Name</th>
+				<th>Teacher</th>
+				<th id="table-top-right" class="short-col">Action</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			<tr th:each="course : ${courses}">
+				<td th:text="${course.code}">
+				<td th:text="${course.name}">
+				<td th:text="${course.teacher.firstName + ' ' + course.teacher.lastName}">
+				<td class="short-col">
+					<a class="button delete-button" th:href="@{/admin/students/{studentId}/courses/delete/{courseId}(studentId=${student.id}, courseId=${course.id})}"
+							onclick="if (!(confirm('Are you sure you want to unroll the student from this course?'))) return false">
+					<i class="fa fa-trash"></i><span>Remove</span></a>
+				</td>
+			</tr>	
+		</tbody>
+	
+	</table>
+	
 	</div>
 	
-	<div th:if="${listSize == 0}">There are no courses available to add.</div>
+	
+	<a class="button add-button" th:href="@{/admin/students/{studentId}/addCourse(studentId=${student.id})}">Add New Course to Student</a>
+	
 	
 	</div>
 </body>

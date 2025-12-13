@@ -3,22 +3,19 @@
 <html>
 
 <head>
-	<title>Add Course</title>
+	<title>Add New Course</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
 	 
 	<!-- <link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/button.css}">
-	
 	<link rel="stylesheet" th:href="@{/css/admin/add-course.css}"> -->
-	
+
   <link rel="stylesheet" href="../../static/css/admin/add-course.css">
   <link rel="stylesheet" href="../../static/css/navbar.css">
-  <link rel="stylesheet" href="../../static/css/button.css">
 	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	
 </head>
 
 <body>
@@ -42,50 +39,46 @@
 	
 	<div class="vertical-navbar">
 		<ul>
-			<!-- <li><a th:href="@{/admin/adminPanel}"><i class="fa fa-home fa-navbar"></i><span>Dashboard</span></a></li>
+			<li><a th:href="@{/admin/adminPanel}"><i class="fa fa-home fa-navbar"></i><span>Dashboard</span></a></li>
 			<li><a th:href="@{/admin/courses}"><i class="fa fa-pencil fa-navbar"></i><span>Courses</span></a></li>
 			<li><a th:href="@{/admin/students}"><i class="fa fa-user fa-navbar"></i><span>Students</span></a></li>
 			<li><a th:href="@{/admin/teachers}"><i class="fa fa-user-secret fa-navbar"></i><span>Teachers</span></a></li>
 			<li><a th:href="@{/admin/adminPanel}"><i class="fa fa-calendar fa-navbar"></i><span>Calendar</span></a></li>
 			<li><a th:href="@{/admin/adminPanel}"><i class="fa fa-bullhorn fa-navbar"></i><span>Announcements</span></a></li>
-			<li><a th:href="@{/admin/adminInfo}"><i class="fa fa-info-circle fa-navbar"></i><span>Info</span></a></li> -->
-      <li><a href="admin-panel.html"><i class="fa fa-home fa-navbar"></i><span>Dashboard</span></a></li>
-      <li><a href="course-list.html"><i class="fa fa-pencil fa-navbar"></i><span>Courses</span></a></li>
-      <li><a href="student-list.html"><i class="fa fa-user fa-navbar"></i><span>Students</span></a></li>
-      <li><a href="teacher-list.html"><i class="fa fa-user-secret fa-navbar"></i><span>Teachers</span></a></li>
-      <li><a href="#"><i class="fa fa-calendar fa-navbar"></i><span>Calendar</span></a></li>
-      <li><a href="#"><i class="fa fa-bullhorn fa-navbar"></i><span>Announcements</span></a></li>
-      <li><a href="#"><i class="fa fa-info-circle fa-navbar"></i><span>Info</span></a></li>
+			<li><a th:href="@{/admin/adminInfo}"><i class="fa fa-info-circle fa-navbar"></i><span>Info</span></a></li>
 		</ul>
 	</div>
 	
 	<div class="content">
 	
-	<h3>Add Course</h3>
-	<!-- <div th:if="${listSize != 0}">
-	<form action="#" th:action="@{/admin/students/{studentId}/addCourse/save(studentId=${student.id})}">
-		<select th:name="courseId">
-			<option th:each="c : ${courses}"
-                    th:value="${c.id}"
-                    th:text="${c.code + ' ' + c.name}" />			
+	<div class="container">
+	<h3>Add New Course</h3>
+	
+	<form action="#" th:action="@{/admin/saveCourse}" th:object="${course}" method="POST">
+		
+		<input type="hidden" th:field="*{id}">
+		
+		<div class="form-input-item">
+		<div>Course code:</div> <input type="text" th:field="*{code}">
+		<p th:if="${#fields.hasErrors('code')}" class="error">Please enter the course code!</p>
+		</div>
+		
+		<div class="form-input-item">
+		<div>Course name:</div> <input type="text" th:field="*{name}">
+		<p th:if="${#fields.hasErrors('name')}" class="error">Please enter the name!</p>
+		</div>
+		
+		 <div class="form-input-item">Teacher: </div>
+		 <select th:name="teacherId">
+			<option th:each="t : ${teachers}"
+                    th:value="${t.id}"
+                    th:text="${t.firstName + ' ' + t.lastName}" />			
 		</select>
+		
 		<button type="submit">Add</button>
 	</form>
-	</div>
 	
-	<div th:if="${listSize == 0}">There are no courses available to add.</div> -->
-
-  <form action="#">
-
-    <select name="courseId">
-      <option value="1">A</option>
-      <option value="2">B</option>
-      <option value="3">C</option>
-      <option value="4">D</option>
-    </select>
-    <button type="submit">Add</button>
-  </form>
-  
+	</div>
 	</div>
 </body>
 

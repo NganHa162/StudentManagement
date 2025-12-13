@@ -1,68 +1,130 @@
 package org.example.studentmanagement.entity;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 class StudentCourseDetailTest {
 
     @Test
     void constructor_setsAllFields() {
-        StudentCourseDetail detail = new StudentCourseDetail(1, 101, 201, "2025-09-01", "enrolled");
+        GradeDetails gradeDetails = new GradeDetails();
+        gradeDetails.setId(1);
+        List<Assignment> assignments = new ArrayList<>();
+        Assignment assignment = new Assignment();
+        assignment.setId(101);
+        assignments.add(assignment);
 
-        assertEquals(1, detail.getId());
-        assertEquals(101, detail.getStudentId());
-        assertEquals(201, detail.getCourseId());
-        assertEquals("2025-09-01", detail.getEnrollmentDate());
-        assertEquals("enrolled", detail.getStatus());
+        StudentCourseDetails details = new StudentCourseDetails(1, 101, 201, gradeDetails, assignments);
+
+        assertEquals(1, details.getId());
+        assertEquals(101, details.getStudentId());
+        assertEquals(201, details.getCourseId());
+        assertEquals(gradeDetails, details.getGradeDetails());
+        assertEquals(assignments, details.getAssignments());
+    }
+
+    @Test
+    void defaultConstructor_createsEmptyObject() {
+        StudentCourseDetails details = new StudentCourseDetails();
+
+        assertEquals(0, details.getId());
+        assertEquals(0, details.getStudentId());
+        assertEquals(0, details.getCourseId());
+        assertNull(details.getGradeDetails());
+        assertNull(details.getAssignments());
     }
 
     @Test
     void settersAndGetters_workCorrectly() {
-        StudentCourseDetail detail = new StudentCourseDetail();
+        StudentCourseDetails details = new StudentCourseDetails();
+        GradeDetails gradeDetails = new GradeDetails();
+        gradeDetails.setId(1);
+        List<Assignment> assignments = new ArrayList<>();
+        Assignment assignment1 = new Assignment();
+        assignment1.setId(101);
+        assignments.add(assignment1);
 
-        detail.setId(2);
-        detail.setStudentId(102);
-        detail.setCourseId(202);
-        detail.setEnrollmentDate("2025-10-15");
-        detail.setStatus("completed");
+        details.setId(2);
+        details.setStudentId(102);
+        details.setCourseId(202);
+        details.setGradeDetails(gradeDetails);
+        details.setAssignments(assignments);
 
-        assertEquals(2, detail.getId());
-        assertEquals(102, detail.getStudentId());
-        assertEquals(202, detail.getCourseId());
-        assertEquals("2025-10-15", detail.getEnrollmentDate());
-        assertEquals("completed", detail.getStatus());
+        assertEquals(2, details.getId());
+        assertEquals(102, details.getStudentId());
+        assertEquals(202, details.getCourseId());
+        assertEquals(gradeDetails, details.getGradeDetails());
+        assertEquals(assignments, details.getAssignments());
     }
 
     @Test
-    void setStatus_allowsEnrolledStatus() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setStatus("enrolled");
+    void getAssignmentById_returnsAssignmentWhenExists() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        List<Assignment> assignments = new ArrayList<>();
+        Assignment assignment1 = new Assignment();
+        assignment1.setId(101);
+        assignment1.setTitle("Assignment 1");
+        Assignment assignment2 = new Assignment();
+        assignment2.setId(102);
+        assignment2.setTitle("Assignment 2");
+        assignments.add(assignment1);
+        assignments.add(assignment2);
+        details.setAssignments(assignments);
 
-        assertEquals("enrolled", detail.getStatus(), "Status should be set to 'enrolled'");
+        Assignment found = details.getAssignmentById(101);
+
+        assertNotNull(found, "Should return assignment when it exists");
+        assertEquals(101, found.getId());
+        assertEquals("Assignment 1", found.getTitle());
     }
 
     @Test
-    void setStatus_allowsCompletedStatus() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setStatus("completed");
+    void getAssignmentById_returnsNullWhenAssignmentDoesNotExist() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        List<Assignment> assignments = new ArrayList<>();
+        Assignment assignment1 = new Assignment();
+        assignment1.setId(101);
+        assignments.add(assignment1);
+        details.setAssignments(assignments);
 
-        assertEquals("completed", detail.getStatus(), "Status should be set to 'completed'");
+        Assignment found = details.getAssignmentById(999);
+
+        assertNull(found, "Should return null when assignment does not exist");
     }
 
     @Test
-    void setStatus_allowsDroppedStatus() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setStatus("dropped");
+    void getAssignmentById_returnsNullWhenAssignmentsListIsNull() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setAssignments(null);
 
-        assertEquals("dropped", detail.getStatus(), "Status should be set to 'dropped'");
+        Assignment found = details.getAssignmentById(101);
+
+        assertNull(found, "Should return null when assignments list is null");
+    }
+
+    @Test
+    void getAssignmentById_returnsNullWhenAssignmentsListIsEmpty() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setAssignments(new ArrayList<>());
+
+        Assignment found = details.getAssignmentById(101);
+
+        assertNull(found, "Should return null when assignments list is empty");
     }
 
     @Test
     void equals_returnsTrueWhenIdsMatch() {
-        StudentCourseDetail first = new StudentCourseDetail();
+        StudentCourseDetails first = new StudentCourseDetails();
         first.setId(1);
-        StudentCourseDetail second = new StudentCourseDetail();
+        StudentCourseDetails second = new StudentCourseDetails();
         second.setId(1);
 
         assertTrue(first.equals(second), "StudentCourseDetails with matching ids should be equal");
@@ -70,9 +132,9 @@ class StudentCourseDetailTest {
 
     @Test
     void equals_returnsFalseWhenIdsDiffer() {
-        StudentCourseDetail first = new StudentCourseDetail();
+        StudentCourseDetails first = new StudentCourseDetails();
         first.setId(1);
-        StudentCourseDetail second = new StudentCourseDetail();
+        StudentCourseDetails second = new StudentCourseDetails();
         second.setId(2);
 
         assertFalse(first.equals(second), "StudentCourseDetails with different ids should not be equal");
@@ -80,36 +142,67 @@ class StudentCourseDetailTest {
 
     @Test
     void equals_returnsTrueWhenSameObject() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setId(1);
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setId(1);
 
-        assertTrue(detail.equals(detail), "StudentCourseDetail should equal itself");
+        assertTrue(details.equals(details), "StudentCourseDetails should equal itself");
     }
 
     @Test
     void equals_returnsFalseWhenComparedToNull() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setId(1);
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setId(1);
 
-        assertFalse(detail.equals(null), "StudentCourseDetail should not equal null");
+        assertFalse(details.equals(null), "StudentCourseDetails should not equal null");
     }
 
     @Test
     void equals_returnsFalseWhenComparedToDifferentClass() {
-        StudentCourseDetail detail = new StudentCourseDetail();
-        detail.setId(1);
-        String notADetail = "Not a detail";
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setId(1);
+        String notADetail = "Not a StudentCourseDetails";
 
-        assertFalse(detail.equals(notADetail), "StudentCourseDetail should not equal object of different class");
+        assertFalse(details.equals(notADetail), "StudentCourseDetails should not equal object of different class");
     }
 
     @Test
-    void defaultConstructor_createsEmptyObject() {
-        StudentCourseDetail detail = new StudentCourseDetail();
+    void equals_ignoresOtherFieldsWhenComparing() {
+        GradeDetails gradeDetails1 = new GradeDetails();
+        gradeDetails1.setId(1);
+        List<Assignment> assignments1 = new ArrayList<>();
+        StudentCourseDetails first = new StudentCourseDetails(1, 101, 201, gradeDetails1, assignments1);
 
-        assertNotNull(detail, "Default constructor should create non-null object");
-        assertEquals(0, detail.getId(), "Default id should be 0");
-        assertEquals(0, detail.getStudentId(), "Default studentId should be 0");
-        assertEquals(0, detail.getCourseId(), "Default courseId should be 0");
+        GradeDetails gradeDetails2 = new GradeDetails();
+        gradeDetails2.setId(2);
+        List<Assignment> assignments2 = new ArrayList<>();
+        StudentCourseDetails second = new StudentCourseDetails(1, 999, 888, gradeDetails2, assignments2);
+
+        assertTrue(first.equals(second), 
+                  "StudentCourseDetails should be equal based on id only, ignoring other fields");
+    }
+
+    @Test
+    void gradeDetails_canBeSetToNull() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setGradeDetails(null);
+
+        assertNull(details.getGradeDetails(), "GradeDetails should be able to be set to null");
+    }
+
+    @Test
+    void assignments_canBeSetToNull() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setAssignments(null);
+
+        assertNull(details.getAssignments(), "Assignments should be able to be set to null");
+    }
+
+    @Test
+    void assignments_canBeSetToEmptyList() {
+        StudentCourseDetails details = new StudentCourseDetails();
+        details.setAssignments(new ArrayList<>());
+
+        assertNotNull(details.getAssignments(), "Assignments should be able to be set to empty list");
+        assertTrue(details.getAssignments().isEmpty(), "Assignments list should be empty");
     }
 }

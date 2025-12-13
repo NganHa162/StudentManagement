@@ -124,4 +124,28 @@ class AssignmentTest {
 
         assertFalse(assignment.equals(notAnAssignment), "Assignment should not equal object of different class");
     }
+
+    @Test
+    void setDaysRemaining_updatesDaysRemaining() {
+        Assignment assignment = new Assignment();
+        assignment.setDaysRemaining(7);
+
+        assertEquals(7, assignment.getDaysRemaining());
+    }
+
+    @Test
+    void daysRemaining_canBeSetToZero() {
+        Assignment assignment = new Assignment();
+        assignment.setDaysRemaining(0);
+
+        assertEquals(0, assignment.getDaysRemaining());
+    }
+
+    @Test
+    void daysRemaining_canBeNegative() {
+        Assignment assignment = new Assignment();
+        assignment.setDaysRemaining(-5);
+
+        assertEquals(-5, assignment.getDaysRemaining(), "Days remaining can be negative for overdue assignments");
+    }
 }

@@ -42,6 +42,9 @@ public class StudentController {
 	@Autowired
 	private AssignmentDetailsService assignmentDetailsService;
 	
+	@Autowired
+	private GradeDetailsService gradeDetailsService;
+	
 	@GetMapping("/dashboard")
 	public String dashboard(Authentication authentication, Model model) {
 		model.addAttribute("username", authentication.getName());

@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,8 +42,11 @@ public class StudentController {
 	@Autowired
 	private AssignmentDetailsService assignmentDetailsService;
 	
-	@Autowired
-	private GradeDetailsService gradeDetailsService;
+	@GetMapping("/dashboard")
+	public String dashboard(Authentication authentication, Model model) {
+		model.addAttribute("username", authentication.getName());
+		return "student/dashboard";
+	}
 	
 	@GetMapping("/{studentId}/courses")
 	public String showStudentPanel(@PathVariable("studentId") int studentId, Model theModel) {

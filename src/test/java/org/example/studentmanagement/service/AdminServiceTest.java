@@ -3,6 +3,7 @@ package org.example.studentmanagement.service;
 import java.util.Optional;
 
 import org.example.studentmanagement.dao.AdminDAO;
+import org.example.studentmanagement.dao.StudentDAO;
 import org.example.studentmanagement.entity.Admin;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,11 +22,17 @@ class AdminServiceTest {
 
     private AdminServiceImpl adminService;
     private AdminDAO adminDAO;
+    private StudentDAO studentDAO;
+    private StudentCourseDetailsService studentCourseDetailsService;
+    private GradeDetailsService gradeDetailsService;
 
     @BeforeEach
     void setUp() {
         adminDAO = mock(AdminDAO.class);
-        adminService = new AdminServiceImpl(adminDAO);
+        studentDAO = mock(StudentDAO.class);
+        studentCourseDetailsService = mock(StudentCourseDetailsService.class);
+        gradeDetailsService = mock(GradeDetailsService.class);
+        adminService = new AdminServiceImpl(adminDAO, studentDAO, studentCourseDetailsService, gradeDetailsService);
     }
 
     @Test

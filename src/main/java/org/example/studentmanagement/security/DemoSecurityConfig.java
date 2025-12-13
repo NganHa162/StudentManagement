@@ -18,7 +18,9 @@ public class DemoSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // Use custom encoder that supports both plain text and BCrypt
+        // This allows using plain text passwords from mock-data.sql
+        return new PlainTextOrBCryptPasswordEncoder();
     }
 
     @Bean

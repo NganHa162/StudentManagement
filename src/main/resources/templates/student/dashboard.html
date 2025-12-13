@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+</head>
+<body>
+<section>
+    <h1>Welcome, <span th:text="${username}">Student</span></h1>
+    <p>You are logged in as STUDENT.</p>
+    <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</section>
+</body>
+</html>
+
+

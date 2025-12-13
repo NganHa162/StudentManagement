@@ -1,67 +1,65 @@
 package org.example.studentmanagement.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "assignment_details")
 public class AssignmentDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignment_id")
-    private Assignment assignment;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enrollment_id")
-    private StudentCourseEnrollment enrollment;
-
-    @Column(nullable = false)
-    private boolean done;
+    private int id;
+    private int assignmentId;
+    private int studentCourseDetailsId;
+    private int isDone; // 0 = incomplete, 1 = completed
 
     public AssignmentDetails() {
     }
 
-    public Long getId() {
+    public AssignmentDetails(int id, int assignmentId, int studentCourseDetailsId, int isDone) {
+        this.id = id;
+        this.assignmentId = assignmentId;
+        this.studentCourseDetailsId = studentCourseDetailsId;
+        this.isDone = isDone;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Assignment getAssignment() {
-        return assignment;
+    public int getAssignmentId() {
+        return assignmentId;
     }
 
-    public void setAssignment(Assignment assignment) {
-        this.assignment = assignment;
+    public void setAssignmentId(int assignmentId) {
+        this.assignmentId = assignmentId;
     }
 
-    public StudentCourseEnrollment getEnrollment() {
-        return enrollment;
+    public int getStudentCourseDetailsId() {
+        return studentCourseDetailsId;
     }
 
-    public void setEnrollment(StudentCourseEnrollment enrollment) {
-        this.enrollment = enrollment;
+    public void setStudentCourseDetailsId(int studentCourseDetailsId) {
+        this.studentCourseDetailsId = studentCourseDetailsId;
     }
 
-    public boolean isDone() {
-        return done;
+    public int getIsDone() {
+        return isDone;
     }
 
-    public void setDone(boolean done) {
-        this.done = done;
+    public void setIsDone(int isDone) {
+        this.isDone = isDone;
+    }
+
+    @Override
+    public boolean equals(Object comparedObject) {
+        if (this == comparedObject) {
+            return true;
+        }
+
+        if (!(comparedObject instanceof AssignmentDetails)) {
+            return false;
+        }
+
+        AssignmentDetails compared = (AssignmentDetails) comparedObject;
+        return this.id == compared.id;
     }
 }
 

@@ -1,41 +1,28 @@
 package org.example.studentmanagement.entity;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Student {
+public class Teacher {
     private int id;
-    
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+
     private String userName;
-    
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+
     private String password;
-    
-    @NotBlank(message = "First name is required")
-    @Size(min = 1, max = 50, message = "First name must be between 1 and 50 characters")
+
     private String firstName;
-    
-    @NotBlank(message = "Last name is required")
-    @Size(min = 1, max = 50, message = "Last name must be between 1 and 50 characters")
+
     private String lastName;
-    
-    @NotBlank(message = "Email is required")
-    @Email(message = "Please provide a valid email address")
+
     private String email;
-    
+
     private List<Course> courses;
 
-    public Student() {
+    public Teacher() {
 
     }
 
-    public Student(int id, String userName, String password, String firstName, String lastName, String email,
+    public Teacher(int id, String userName, String password, String firstName, String lastName, String email,
                    List<Course> courses) {
         this.id = id;
         this.userName = userName;
@@ -44,15 +31,6 @@ public class Student {
         this.lastName = lastName;
         this.email = email;
         this.courses = courses;
-    }
-
-
-
-    public void addCourse(Course course) {
-        if(courses == null) {
-            courses = new ArrayList<>();
-        }
-        courses.add(course);
     }
 
     public int getId() {
@@ -103,6 +81,7 @@ public class Student {
         this.email = email;
     }
 
+
     public List<Course> getCourses() {
         return courses;
     }
@@ -111,26 +90,10 @@ public class Student {
         this.courses = courses;
     }
 
-    public void removeCourse(Course course) {
-        courses.remove(course);
+    public void addCourse(Course course) {
+        if(courses == null) {
+            courses = new ArrayList<>();
+        }
+        courses.add(course);
     }
-
-    public boolean equals(Object comparedObject) {
-        if (this == comparedObject) {
-            return true;
-        }
-
-        if (!(comparedObject instanceof Student)) {
-            return false;
-        }
-
-        Student comparedStudent = (Student) comparedObject;
-
-        if (this.id == comparedStudent.id) {
-            return true;
-        }
-
-        return false;
-    }
-
 }

@@ -1,54 +1,48 @@
 package org.example.studentmanagement.entity;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "assignments")
 public class Assignment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
+    private int id;
+    private int courseId;
     private String title;
-
-    @Column(nullable = false, length = 2048)
     private String description;
-
-    @Column(nullable = false)
-    private LocalDate dueDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id")
-    private Course course;
-
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AssignmentDetails> details = new HashSet<>();
+    private String dueDate;
+    private double maxScore;
+    private String createdDate;
+    private String status; // e.g., "active", "closed", "draft"
+    private int createdByTeacherId;
+    private int daysRemaining; // calculated field for days until due date
 
     public Assignment() {
     }
 
-    public Long getId() {
+    public Assignment(int id, int courseId, String title, String description, 
+                     String dueDate, double maxScore, String createdDate, 
+                     String status, int createdByTeacherId) {
+        this.id = id;
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.maxScore = maxScore;
+        this.createdDate = createdDate;
+        this.status = status;
+        this.createdByTeacherId = createdByTeacherId;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public String getTitle() {
@@ -67,28 +61,74 @@ public class Assignment {
         this.description = description;
     }
 
-    public LocalDate getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 
-    public Course getCourse() {
-        return course;
+    public double getMaxScore() {
+        return maxScore;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setMaxScore(double maxScore) {
+        this.maxScore = maxScore;
     }
 
-    public Set<AssignmentDetails> getDetails() {
-        return details;
+    public String getCreatedDate() {
+        return createdDate;
     }
 
-    public void setDetails(Set<AssignmentDetails> details) {
-        this.details = details;
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getCreatedByTeacherId() {
+        return createdByTeacherId;
+    }
+
+    public void setCreatedByTeacherId(int createdByTeacherId) {
+        this.createdByTeacherId = createdByTeacherId;
+    }
+
+    public boolean isActive() {
+        return "active".equalsIgnoreCase(this.status);
+    }
+
+    public boolean isClosed() {
+        return "closed".equalsIgnoreCase(this.status);
+    }
+
+    public int getDaysRemaining() {
+        return daysRemaining;
+    }
+
+    public void setDaysRemaining(int daysRemaining) {
+        this.daysRemaining = daysRemaining;
+    }
+
+    @Override
+    public boolean equals(Object comparedObject) {
+        if (this == comparedObject) {
+            return true;
+        }
+
+        if (!(comparedObject instanceof Assignment)) {
+            return false;
+        }
+
+        Assignment compared = (Assignment) comparedObject;
+        return this.id == compared.id;
     }
 }
 

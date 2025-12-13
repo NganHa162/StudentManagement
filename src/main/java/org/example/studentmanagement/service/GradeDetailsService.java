@@ -8,5 +8,6 @@ public interface GradeDetailsService {
     List<GradeDetails> findAll();
     void save(GradeDetails gradeDetails);
     void deleteById(int id);
+    List<GradeDetails> findByStudentIdAndCourseId(int studentId, int courseId);
 }
 

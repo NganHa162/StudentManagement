@@ -36,5 +36,10 @@ public class GradeDetailsServiceImpl implements GradeDetailsService {
     public void deleteById(int id) {
         gradeDetailsDAO.deleteById(id);
     }
+
+    @Override
+    public List<GradeDetails> findByStudentIdAndCourseId(int studentId, int courseId) {
+        return gradeDetailsDAO.findByStudentIdAndCourseId(studentId, courseId);
+    }
 }
 

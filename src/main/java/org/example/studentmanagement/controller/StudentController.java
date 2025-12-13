@@ -22,6 +22,7 @@ import org.example.studentmanagement.service.CourseService;
 import org.example.studentmanagement.service.AssignmentDetailsService;
 import org.example.studentmanagement.service.StudentCourseDetailsService;
 import org.example.studentmanagement.service.StudentService;
+import org.example.studentmanagement.service.GradeDetailsService;
 
 @Controller
 @RequestMapping("/student")
@@ -39,6 +40,9 @@ public class StudentController {
 	
 	@Autowired
 	private AssignmentDetailsService assignmentDetailsService;
+	
+	@Autowired
+	private GradeDetailsService gradeDetailsService;
 	
 	@GetMapping("/{studentId}/courses")
 	public String showStudentPanel(@PathVariable("studentId") int studentId, Model theModel) {
@@ -63,7 +67,10 @@ public class StudentController {
 			assignment.setDaysRemaining(daysRemaining);
 		}
 		
+		// Get all grades for this student and course
+		List<GradeDetails> allGrades = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
 		
+		// Keep backward compatibility with existing gradeDetails
 		GradeDetails gradeDetails = studentCourseDetails.getGradeDetails();
 		
 		theModel.addAttribute("assignments", assignments);
@@ -71,8 +78,43 @@ public class StudentController {
 		theModel.addAttribute("courses", courses);
 		theModel.addAttribute("student", student);
 		theModel.addAttribute("gradeDetails", gradeDetails);
+		theModel.addAttribute("allGrades", allGrades);
 		
 		return "student/student-course-detail";
+	}
+	
+	@GetMapping("/{studentId}/courses/{courseId}/grades")
+	public String showStudentCourseGrades(@PathVariable("studentId") int studentId, @PathVariable("courseId") int courseId, Model theModel) {
+		Student student = studentService.findByStudentId(studentId);
+		List<Course> courses = student.getCourses();
+		Course course = courseService.findCourseById(courseId);
+		List<GradeDetails> allGrades = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
+		
+		// Calculate overall statistics
+		double totalScore = 0.0;
+		double totalMaxScore = 0.0;
+		int gradedCount = 0;
+		
+		for (GradeDetails grade : allGrades) {
+			if (grade.getMaxScore() > 0) {
+				totalScore += grade.getScore();
+				totalMaxScore += grade.getMaxScore();
+				gradedCount++;
+			}
+		}
+		
+		double overallPercentage = (totalMaxScore > 0) ? (totalScore / totalMaxScore) * 100 : 0.0;
+		
+		theModel.addAttribute("student", student);
+		theModel.addAttribute("course", course);
+		theModel.addAttribute("courses", courses);
+		theModel.addAttribute("allGrades", allGrades);
+		theModel.addAttribute("totalScore", totalScore);
+		theModel.addAttribute("totalMaxScore", totalMaxScore);
+		theModel.addAttribute("overallPercentage", overallPercentage);
+		theModel.addAttribute("gradedCount", gradedCount);
+		
+		return "student/student-course-grades";
 	}
 	
 	@GetMapping("/{studentId}/courses/{courseId}/assignment/{assignmentId}")

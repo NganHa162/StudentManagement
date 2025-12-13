@@ -29,43 +29,30 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        try {
-            // Only create data if tables are empty
-            if (studentDAO.findAll().isEmpty()) {
-                initializeStudents();
-                System.out.println("Test data created for Students");
-            }
-
-            if (teacherDAO.findAll().isEmpty()) {
-                initializeTeachers();
-                System.out.println("Test data created for Teachers");
-            }
-        } catch (Exception e) {
-            System.err.println("Warning: Could not initialize test data. Database connection may not be available.");
-            System.err.println("Error: " + e.getMessage());
-            // Don't throw exception to allow application to continue
-        }
+        // DISABLED: Using mock-data.sql from Docker instead
+        // DataInitializer is disabled to avoid conflicts with database init scripts
+        System.out.println("DataInitializer: Skipped (using mock-data.sql from docker-compose)");
     }
 
     private void initializeStudents() {
         // Create 3 test students
         // Password: "student123"
-        createStudent("student1", "student123", "Nguyen", "Van A", "student1@example.com");
-        createStudent("student2", "student123", "Tran", "Thi B", "student2@example.com");
-        createStudent("student3", "student123", "Le", "Van C", "student3@example.com");
+        createStudent("student11", "student123", "Nguyen", "Van A", "student1@example.com");
+        createStudent("student21", "student123", "Tran", "Thi B", "student2@example.com");
+        createStudent("student31", "student123", "Le", "Van C", "student3@example.com");
     }
 
     private void initializeTeachers() {
         // Create 2 test teachers
         // Password: "teacher123"
-        createTeacher("teacher1", "teacher123", "Pham", "Thi D", "teacher1@example.com");
-        createTeacher("teacher2", "teacher123", "Hoang", "Van E", "teacher2@example.com");
+        createTeacher("teacher11", "teacher123", "Pham", "Thi D", "teacher1@example.com");
+        createTeacher("teacher21", "teacher123", "Hoang", "Van E", "teacher2@example.com");
     }
 
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
         Student student = new Student();
         student.setUserName(username);
-        student.setPassword(passwordEncoder.encode(password));
+        student.setPassword(password);  // Don't encode - use plain text for testing
         student.setFirstName(firstName);
         student.setLastName(lastName);
         student.setEmail(email);
@@ -76,7 +63,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createTeacher(String username, String password, String firstName, String lastName, String email) {
         Teacher teacher = new Teacher();
         teacher.setUserName(username);
-        teacher.setPassword(passwordEncoder.encode(password));
+        teacher.setPassword(password);  // Don't encode - use plain text for testing
         teacher.setFirstName(firstName);
         teacher.setLastName(lastName);
         teacher.setEmail(email);

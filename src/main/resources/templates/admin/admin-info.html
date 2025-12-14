@@ -2,17 +2,13 @@
 <html lang="eng" xlmns:th="http://www.thymeleaf.org">
 
 <head>
-	<title>Admin Panel</title>
+	<title>Admin Info</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
-	 
-	<!-- <link rel="stylesheet" th:href="@{/css/navbar.css}"> 
+	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/admin/admin-panel.css}"> -->
-	<link rel="stylesheet" href="../../static/css/admin/admin-panel.css">
-    <link rel="stylesheet" href="../../static/css/navbar.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" th:href="@{/css/admin/admin-info.css}">
 	
 </head>
 
@@ -51,26 +47,32 @@
 	
 	<div class="content">
 	
-		<h3>Admin Dashboard</h3>
-		
-		
-		<div class="sections">
-		<div class="section" id="add-course">
-			<a th:href="@{/admin/addCourse}"><div>Add New Course</div></a>	
+		<h3>Admin Info</h3>
+		<div class="card-container">
+		<div class="card courses">
+			<div class="card-info">
+				<i class="fa fa-pencil"></i>
+				<span>Courses:</span>
+			</div>
+				<div class="card-value" th:text="${courseSize}"></div>
 		</div>
 		
-		<div class="section" id="courses">
-			<a th:href="@{/admin/courses}"><div>Update & Delete Courses</div></a>	
+		<div class="card students" id="students">
+			<div class="card-info">
+				<i class="fa fa-user"></i>
+				<span>Students:</span>
+				</div>
+				<div class="card-value" th:text="${studentSize}"></div>
 		</div>
 		
-		<div class="section" id="students">
-			<a th:href="@{/admin/students}"><div>Update & Delete Students</div></a>
-		</div>
 		
-		<div class="section" id="teachers">
-			<a th:href="@{/admin/teachers}"><div>Update & Delete Teachers</div></a>
+		<div class="card teachers" id="teachers">
+			<div class="card-info">
+				<i class="fa fa-user-secret"></i>
+				<span>Teachers:</span>
+			</div>
+				<div class="card-value" th:text="${teacherSize}"></div>
 		</div>
-				
 		</div>
 	</div>
 

@@ -2,9 +2,11 @@ package org.example.studentmanagement.service;
 
 import org.example.studentmanagement.dao.AdminDAO;
 import org.example.studentmanagement.dao.StudentDAO;
+import org.example.studentmanagement.dao.TeacherDAO;
 import org.example.studentmanagement.entity.Admin;
 import org.example.studentmanagement.entity.Student;
 import org.example.studentmanagement.entity.StudentCourseDetails;
+import org.example.studentmanagement.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,16 +22,19 @@ public class AdminServiceImpl implements AdminService {
 
     private final AdminDAO adminDAO;
     private final StudentDAO studentDAO;
+    private final TeacherDAO teacherDAO;
     private final StudentCourseDetailsService studentCourseDetailsService;
     private final GradeDetailsService gradeDetailsService;
 
     @Autowired
     public AdminServiceImpl(AdminDAO adminDAO, 
                            StudentDAO studentDAO,
+                           TeacherDAO teacherDAO,
                            StudentCourseDetailsService studentCourseDetailsService,
                            GradeDetailsService gradeDetailsService) {
         this.adminDAO = adminDAO;
         this.studentDAO = studentDAO;
+        this.teacherDAO = teacherDAO;
         this.studentCourseDetailsService = studentCourseDetailsService;
         this.gradeDetailsService = gradeDetailsService;
     }
@@ -88,6 +93,32 @@ public class AdminServiceImpl implements AdminService {
         
         // Finally delete the student
         studentDAO.deleteById(studentId);
+    }
+    
+    // Admin operations on Teacher entities
+    
+    @Override
+    public void createTeacher(Teacher teacher) {
+        // Initialize courses list if null
+        if (teacher.getCourses() == null) {
+            teacher.setCourses(new ArrayList<>());
+        }
+        
+        teacherDAO.save(teacher);
+    }
+
+    @Override
+    public void updateTeacher(Teacher teacher) {
+        // Business logic for updating teacher
+        Teacher existing = teacherDAO.findById(teacher.getId());
+        if (existing != null) {
+            // Keep courses if not provided
+            if (teacher.getCourses() == null) {
+                teacher.setCourses(existing.getCourses());
+            }
+        }
+        
+        teacherDAO.save(teacher);
     }
 }
 

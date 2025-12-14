@@ -6,14 +6,9 @@
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
-	 <!--
 	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
 	<link rel="stylesheet" th:href="@{/css/admin/admin-info.css}">
--->
-    <link rel="stylesheet" href="../../static/css/navbar.css">
-    <link rel="stylesheet" href="../../static/css/admin/admin-info.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	
 </head>
 
@@ -54,29 +49,29 @@
 	
 		<h3>Admin Info</h3>
 		<div class="card-container">
-		<div class="card">
-			<div>
+		<div class="card courses">
+			<div class="card-info">
 				<i class="fa fa-pencil"></i>
 				<span>Courses:</span>
-				<span th:text="${courseSize}"></span>
 			</div>
+				<div class="card-value" th:text="${courseSize}"></div>
 		</div>
 		
-		<div class="card" id="students">
-			<div>
+		<div class="card students" id="students">
+			<div class="card-info">
 				<i class="fa fa-user"></i>
 				<span>Students:</span>
-				<span th:text="${studentSize}"></span>
-			</div>
+				</div>
+				<div class="card-value" th:text="${studentSize}"></div>
 		</div>
 		
 		
-		<div class="card" id="teachers">
-			<div>
+		<div class="card teachers" id="teachers">
+			<div class="card-info">
 				<i class="fa fa-user-secret"></i>
 				<span>Teachers:</span>
-				<span th:text="${teacherSize}"></span>
 			</div>
+				<div class="card-value" th:text="${teacherSize}"></div>
 		</div>
 		</div>
 	</div>

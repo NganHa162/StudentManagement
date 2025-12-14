@@ -1,147 +1,222 @@
+/* ======================================= */
+/* Tinh chỉnh chung cho nội dung (Content) */
+/* ======================================= */
 h3 {
-	text-align: center;
-	font-size: 24px;
+    text-align: center;
+    font-size: 30px; /* Tăng kích thước H3 */
+    margin-bottom: 30px; /* Thêm khoảng cách */
+    color: #333;
+    font-weight: 300;
+	padding-top: 30px;
 }
 
 .content {
-	/*
-	float: left;
-	padding: 20px 3vw 0px;
-	width: 84.7%;
-	box-sizing: border-box;
-	*/
-	
-	padding: 20px 3vw 0px;
-	margin-left: 15vw;
+	padding-top: 100px; 
+    
+    padding-left: 3vw; /* Giữ padding trái/phải */
+    padding-right: 3vw; 
+    padding-bottom: 30px; /* Thêm padding dưới */
+    
+    margin-left: 15vw; /* Giữ khoảng cách sidebar */
+    min-height: calc(100vh - 70px); 
+    background-color: #f8f9fa;
 }
 
+/* ======================================= */
+/* Layout (Sections) */
+/* ======================================= */
 .sections {
-	width: 90%;
-	margin: auto;
+    /* Sử dụng Flexbox để căn chỉnh linh hoạt hơn */
+    display: flex;
+    flex-wrap: wrap; /* Cho phép xuống dòng */
+    justify-content: center; /* Căn giữa các mục */
+    gap: 30px; /* Khoảng cách giữa các section */
+    width: 90%;
+    margin: 0 auto;
 }
 
+/* ======================================= */
+/* Thiết kế Section Card */
+/* ======================================= */
 .section {
-	float: left;
-    width: 44%;
+    /* Bỏ float: left */
+    width: calc(45% - 30px); /* 45% trừ đi một nửa khoảng cách gap */
+    max-width: 400px; /* Giới hạn kích thước tối đa */
     height: 250px;
+    
+    /* Thiết kế thẩm mỹ */
+    border-radius: 12px; /* Góc bo tròn */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    background-color: #ffffff; /* Nền trắng */
+    
+    /* Hình ảnh nền */
     background-repeat: no-repeat;
-    background-color: rgba(244, 67, 54, 0.6);
-    background-position: center;
-    background-size: 175px;
-    margin: 2vw;
+    background-position: center 30px; /* Đặt hình ảnh cao hơn một chút */
+    background-size: 150px; /* Kích thước hình ảnh vừa phải */
+    
+    /* Vị trí */
     position: relative;
-    font-weight: bold;
+    overflow: hidden; /* Đảm bảo mọi thứ nằm trong card */
+    
+    /* Hiệu ứng chuyển động */
+    transition: all 0.3s ease-in-out; 
 }
 
-#add-course {
-	background-image: url("/images/add-course.png");
-	
+/* Màu Overlay */
+.section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(66, 133, 244, 0.2); /* Overlay màu xanh dương nhẹ */
+    border-radius: 12px;
+    z-index: 1;
 }
 
-#courses {
-	background-image: url("/images/course.png");
-	background-size: 220px;
-}
-
-#students {
-	background-image: url("/images/student.png");
-	background-size: 230px
-}
-
-#teachers {
-	background-image: url("/images/teacher.png");
-}
-
+/* ======================================= */
+/* Hiệu ứng Hover Mượt mà */
+/* ======================================= */
 .section:hover {
-	background-color: rgba(244, 67, 54, 0.8);
+    transform: translateY(-5px); /* Nhấc nhẹ card lên */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Đổ bóng mạnh hơn */
 }
+
+.section:hover:before {
+    background-color: rgba(66, 133, 244, 0.4); /* Overlay tối hơn khi hover */
+}
+
+
+/* ======================================= */
+/* Chỉnh sửa Văn bản và Link */
+/* ======================================= */
 
 .section a {
-	height: 100%;
+    height: 100%;
     position: absolute;
     width: 100%;
     text-align: center;
     text-decoration: none;
-    
+    z-index: 2; /* Đặt link trên overlay */
+    color: #333;
 }
 
 .section a div {
     position: absolute;
     width: 100%;
-    bottom: 10px;
+    bottom: 20px; /* Tăng khoảng cách so với đáy */
     text-align: center;
     font-size: 20px;
+    font-weight: bold;
     color: #333;
+    transition: color 0.3s;
 }
+
+.section:hover a div {
+    color: #4285f4; /* Đổi màu chữ khi hover */
+}
+
+
+/* ======================================= */
+/* Tùy chỉnh Background Image Sizes */
+/* ======================================= */
+
+#add-course {
+    background-image: url("/images/add-course.png");
+    background-size: 130px; /* Tinh chỉnh kích thước */
+}
+
+#courses {
+    background-image: url("/images/course.png");
+    background-size: 170px;
+}
+
+#students {
+    background-image: url("/images/student.png");
+    background-size: 180px;
+}
+
+#teachers {
+    background-image: url("/images/teacher.png");
+    background-size: 130px;
+}
+
+/* ======================================= */
+/* Media Queries (Responsive Design) */
+/* ======================================= */
 
 @media screen and (min-width: 1340px) {
   .content {
-  	margin-left: 200px;
+    margin-left: 200px;
   }
   
   .sections {
-  	width: 915px;
+    width: 100%;
+    max-width: 1300px; /* Giới hạn chiều rộng tối đa */
   }
   
   .section {
-  	width: 400px;
-  	margin: 28px;
+    width: 400px;
   }
 }
+
+@media screen and (max-width: 900px) {
+    .sections {
+        width: 90%;
+        gap: 20px;
+    }
+    
+    .section {
+        width: calc(50% - 10px); /* 2 cột trên màn hình trung bình */
+        height: 175px;
+        background-position: center 20px;
+        background-size: 100px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section a div {
+      font-size: 16px;
+      bottom: 15px;
+    }
+    
+    /* Ghi đè lại kích thước cho một số hình ảnh nếu cần */
+    #courses, #students {
+        background-size: 120px;
+    }
+}
+
 
 @media screen and (max-width: 600px) {
-	.sections {
-		width: 70%;
-	}
-	
-	.section {
-  		width: 90%;
-    	height: 35vw;
-    	background-size: 60% !important;	
-  	}
-  	
-  	.section a div {
-  	font-size: 16px;
-  	}
-  	
-  	#teachers, #add-course {
-  		background-size: 40% !important;
-  	}
-  
+    .content {
+        margin-left: 0; 
+    }
+    
+    .sections {
+        width: 85%;
+        flex-direction: column; /* 1 cột trên di động */
+        align-items: center;
+    }
+    
+    .section {
+        width: 100%; /* Chiếm toàn bộ chiều rộng */
+        height: 120px; /* Chiều cao cố định nhỏ hơn */
+        background-size: 80px;
+        background-position: 20px center; /* Đặt hình ảnh sang bên trái */
+        text-align: left;
+    }
+    
+    .section a div {
+        text-align: left;
+        left: 120px; /* Đẩy chữ sang phải hình ảnh */
+        right: 10px;
+        bottom: auto;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Đảm bảo hình ảnh không quá lớn */
+    #add-course, #teachers {
+        background-size: 60px;
+    }
 }
-
-
-@media screen and (min-width: 600px) and (max-width: 900px) {
-  .section {
-  	height: 175px;
-  	background-size: 150px !important;	
-  }
-  
-  .section a div {
-  	font-size: 16px;
-  }
-  
-  #teachers, #add-course {
-  	background-size: 110px !important;
-  }
-  
-}
-
-/*
-	<nav class="navbar">
-		<ul class="nav-list">
-			<li><a th:href="@{/admin/adminPanel}">Home</a></li>
-			<li><a th:href="@{/admin/courses}">Courses</a></li>
-			<li><a th:href="@{/admin/students}">Students</a></li>
-			<li><a th:href="@{/admin/teachers}">Teachers</a></li>
-			
-			<li class="right-nav">
-				<form action="#" th:action="@{/logout}" method="POST">	
-					<input type="submit" value="Logout" class="logout"/>
-				</form>	
-			</li>
-			<li class="right-nav"><p>Welcome, admin!</p></li>
-		</ul>
-		
-	</nav>
-*/

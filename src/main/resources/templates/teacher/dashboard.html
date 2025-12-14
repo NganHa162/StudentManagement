@@ -8,7 +8,8 @@
 <section>
     <h1>Welcome, <span th:text="${username}">Teacher</span></h1>
     <p>You are logged in as TEACHER.</p>
-    <form action="/logout" method="post">
+    <form th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <button type="submit">Logout</button>
     </form>
 </section>

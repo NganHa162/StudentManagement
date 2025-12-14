@@ -3,14 +3,19 @@ package org.example.studentmanagement.controller;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.example.studentmanagement.entity.Assignment;
 import org.example.studentmanagement.entity.Course;
@@ -22,6 +27,7 @@ import org.example.studentmanagement.service.CourseService;
 import org.example.studentmanagement.service.AssignmentDetailsService;
 import org.example.studentmanagement.service.StudentCourseDetailsService;
 import org.example.studentmanagement.service.StudentService;
+import org.example.studentmanagement.service.GradeDetailsService;
 
 @Controller
 @RequestMapping("/student")
@@ -39,6 +45,15 @@ public class StudentController {
 	
 	@Autowired
 	private AssignmentDetailsService assignmentDetailsService;
+	
+	@Autowired
+	private GradeDetailsService gradeDetailsService;
+	
+	@GetMapping("/dashboard")
+	public String dashboard(Authentication authentication, Model model) {
+		model.addAttribute("username", authentication.getName());
+		return "student/dashboard";
+	}
 	
 	@GetMapping("/{studentId}/courses")
 	public String showStudentPanel(@PathVariable("studentId") int studentId, Model theModel) {
@@ -76,8 +91,9 @@ public class StudentController {
 	}
 	
 	@GetMapping("/{studentId}/courses/{courseId}/assignment/{assignmentId}")
-	public String showStudentAssignment(@PathVariable("studentId") int studentId, @PathVariable("courseId") int courseId, 
-			@PathVariable("assignmentId") int assignmentId, Model theModel) {
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> showStudentAssignment(@PathVariable("studentId") int studentId, @PathVariable("courseId") int courseId, 
+			@PathVariable("assignmentId") int assignmentId) {
 		Student student = studentService.findByStudentId(studentId);
 		List<Course> courses = student.getCourses();
 		Course course = courseService.findCourseById(courseId);
@@ -85,13 +101,28 @@ public class StudentController {
 		Assignment assignment = studentCourseDetails.getAssignmentById(assignmentId);
 		AssignmentDetails assignmentDetails = assignmentDetailsService.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
 		
-		theModel.addAttribute("assignment", assignment);
-		theModel.addAttribute("assignmentDetails", assignmentDetails);
-		theModel.addAttribute("course", course);
-		theModel.addAttribute("courses", courses);
-		theModel.addAttribute("student", student);
+		// Get grade for this assignment
+		GradeDetails assignmentGrade = null;
+		if (assignment != null) {
+			List<GradeDetails> allGrades = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
+			for (GradeDetails grade : allGrades) {
+				if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
+					assignmentGrade = grade;
+					break;
+				}
+			}
+		}
 		
-		return "student/student-assignment-detail";
+		// Build JSON response
+		Map<String, Object> response = new HashMap<>();
+		response.put("assignment", assignment);
+		response.put("assignmentDetails", assignmentDetails);
+		response.put("assignmentGrade", assignmentGrade);
+		response.put("course", course);
+		response.put("courses", courses);
+		response.put("student", student);
+		
+		return ResponseEntity.ok(response);
 	}
 	
 	

@@ -73,7 +73,7 @@
 			<tr th:each="course : ${courses}">
 				<td th:text="${course.code}">
 				<td th:text="${course.name}">
-				<td th:text="${course.teacher.firstName + ' ' + course.teacher.lastName}">
+				<td th:text="${course.teacher != null ? course.teacher.firstName + ' ' + course.teacher.lastName : 'N/A'}">
 				<td class="short-col">
 					<a class="button" th:href="@{/admin/courses/{courseId}/students(courseId=${course.id})}">
 					<i class="fa fa-eye"></i> <span>View</span></a>

@@ -229,22 +229,41 @@ public class AdminController {
 		return "admin/course-list";
 	}
 	
-	
+	//empty try to fix
 	@GetMapping("/courses/delete")
-	public String deleteCourse(@RequestParam("courseId") int courseId) {		
-		Course course = courseService.findCourseById(courseId);
-		List<Student> students = course.getStudents();
-		
-		for(Student student : students) {
-			StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
-			int gradeId = scd.getGradeDetails().getId();
-			studentCourseDetailsService.deleteByStudentAndCourseId(student.getId(), courseId);
-			gradeDetailsService.deleteById(gradeId);
-		}
-		
-		courseService.deleteCourseById(courseId);
-		return "redirect:/admin/courses";
-	}
+public String deleteCourse(@RequestParam("courseId") int courseId) {
+
+    Course course = courseService.findCourseById(courseId);
+    if (course == null) {
+        return "redirect:/admin/courses";
+    }
+
+    List<Student> students = course.getStudents();
+    if (students == null) {
+        students = new ArrayList<>();
+    }
+
+    for (Student student : students) {
+
+        StudentCourseDetails scd =
+            studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
+
+        if (scd != null) {
+
+            GradeDetails grade = scd.getGradeDetails();
+            if (grade != null) {
+                gradeDetailsService.deleteById(grade.getId());
+            }
+
+            studentCourseDetailsService
+                .deleteByStudentAndCourseId(student.getId(), courseId);
+        }
+    }
+
+    courseService.deleteCourseById(courseId);
+    return "redirect:/admin/courses";
+}
+
 	
 	@GetMapping("/courses/{courseId}/students")
 	public String showSudents(@PathVariable("courseId") int courseId, Model theModel) {		

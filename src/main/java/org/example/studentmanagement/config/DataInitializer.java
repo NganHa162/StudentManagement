@@ -80,7 +80,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
         Student student = new Student();
         student.setUserName(username);
-        student.setPassword(passwordEncoder.encode(password));
+        student.setPassword(password);  // Don't encode - use plain text for testing
         student.setFirstName(firstName);
         student.setLastName(lastName);
         student.setEmail(email);
@@ -91,7 +91,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createTeacher(String username, String password, String firstName, String lastName, String email) {
         Teacher teacher = new Teacher();
         teacher.setUserName(username);
-        teacher.setPassword(passwordEncoder.encode(password));
+        teacher.setPassword(password);  // Don't encode - use plain text for testing
         teacher.setFirstName(firstName);
         teacher.setLastName(lastName);
         teacher.setEmail(email);
@@ -102,7 +102,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createAdmin(String username, String password, String firstName, String lastName, String email) {
         Admin admin = new Admin();
         admin.setUserName(username);
-        admin.setPassword(passwordEncoder.encode(password));
+        admin.setPassword(password);  // Don't encode - use plain text for testing
         admin.setFirstName(firstName);
         admin.setLastName(lastName);
         admin.setEmail(email);

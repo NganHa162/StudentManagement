@@ -4,7 +4,9 @@ import java.util.Optional;
 
 import org.example.studentmanagement.dao.AdminDAO;
 import org.example.studentmanagement.dao.StudentDAO;
+import org.example.studentmanagement.dao.TeacherDAO;
 import org.example.studentmanagement.entity.Admin;
+import org.example.studentmanagement.entity.Teacher;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,11 +20,14 @@ import static org.mockito.Mockito.when;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.ArrayList;
+
 class AdminServiceTest {
 
     private AdminServiceImpl adminService;
     private AdminDAO adminDAO;
     private StudentDAO studentDAO;
+    private TeacherDAO teacherDAO;
     private StudentCourseDetailsService studentCourseDetailsService;
     private GradeDetailsService gradeDetailsService;
 
@@ -30,9 +35,10 @@ class AdminServiceTest {
     void setUp() {
         adminDAO = mock(AdminDAO.class);
         studentDAO = mock(StudentDAO.class);
+        teacherDAO = mock(TeacherDAO.class);
         studentCourseDetailsService = mock(StudentCourseDetailsService.class);
         gradeDetailsService = mock(GradeDetailsService.class);
-        adminService = new AdminServiceImpl(adminDAO, studentDAO, studentCourseDetailsService, gradeDetailsService);
+        adminService = new AdminServiceImpl(adminDAO, studentDAO, teacherDAO, studentCourseDetailsService, gradeDetailsService);
     }
 
     @Test
@@ -126,6 +132,66 @@ class AdminServiceTest {
 
         // Assert
         verify(adminDAO).findByUserName("admin");
+    }
+    
+    @Test
+    void createTeacher_initializesCoursesListWhenNull() {
+        // Arrange
+        Teacher teacher = new Teacher(0, "prof_smith", "pass123", "John", "Smith", "john@test.com", null);
+        
+        // Act
+        adminService.createTeacher(teacher);
+        
+        // Assert
+        assertNotNull(teacher.getCourses());
+        verify(teacherDAO).save(teacher);
+    }
+    
+    @Test
+    void createTeacher_savesTeacherWithEmptyCoursesList() {
+        // Arrange
+        Teacher teacher = new Teacher(0, "prof_jones", "pass456", "Jane", "Jones", "jane@test.com", null);
+        
+        // Act
+        adminService.createTeacher(teacher);
+        
+        // Assert
+        assertNotNull(teacher.getCourses());
+        assertTrue(teacher.getCourses().isEmpty());
+        verify(teacherDAO).save(teacher);
+    }
+    
+    @Test
+    void updateTeacher_keepsExistingCoursesWhenNull() {
+        // Arrange
+        Teacher existing = new Teacher(1, "prof", "pass", "John", "Doe", "prof@test.com", new ArrayList<>());
+        existing.getCourses().add(null); // Add a course
+        
+        Teacher updated = new Teacher(1, "prof", "pass", "Johnny", "Doe", "prof@test.com", null);
+        
+        when(teacherDAO.findById(1)).thenReturn(existing);
+        
+        // Act
+        adminService.updateTeacher(updated);
+        
+        // Assert
+        assertEquals(existing.getCourses(), updated.getCourses());
+        verify(teacherDAO).save(updated);
+    }
+    
+    @Test
+    void updateTeacher_doesNotOverrideProvidedCourses() {
+        // Arrange
+        Teacher existing = new Teacher(1, "prof", "pass", "John", "Doe", "prof@test.com", new ArrayList<>());
+        Teacher updated = new Teacher(1, "prof", "pass", "Johnny", "Doe", "prof@test.com", new ArrayList<>());
+        
+        when(teacherDAO.findById(1)).thenReturn(existing);
+        
+        // Act
+        adminService.updateTeacher(updated);
+        
+        // Assert
+        verify(teacherDAO).save(updated);
     }
 }
 

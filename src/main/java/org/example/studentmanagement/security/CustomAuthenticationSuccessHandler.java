@@ -31,7 +31,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private String resolveUrlByRole(String authority) {
         return switch (authority) {
-            case "ROLE_ADMIN" -> "/admin/adminPanel"; // Updated to match AdminController endpoint
+            case "ROLE_ADMIN" -> "/admin/adminPanel";
             case "ROLE_TEACHER" -> "/teacher/dashboard";
             case "ROLE_STUDENT" -> "/student/dashboard";
             default -> "/login?error";

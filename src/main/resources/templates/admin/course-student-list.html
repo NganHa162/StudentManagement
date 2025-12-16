@@ -54,7 +54,7 @@
 	
 	<div class="container">
 	
-	<p th:text="${'Course teacher: ' + (teacher?.firstName ?: 'N/A') + ' ' + (teacher?.lastName ?: '')}"></p>
+	<p th:text="${'Course teacher: ' + (course.teacher?.firstName ?: 'N/A') + ' ' + (course.teacher?.lastName ?: '')}"></p>
 	
 	<div th:if="${students == null or #lists.isEmpty(students)}">
     There are no courses. Please add new courses clicking on the button below.

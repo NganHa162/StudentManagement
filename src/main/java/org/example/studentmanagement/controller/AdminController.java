@@ -194,6 +194,46 @@ public class AdminController {
 		return "redirect:/admin/teachers";
 	}
 	
+	@GetMapping("/teachers/add")
+	public String addTeacher(Model theModel) {
+		Teacher teacher = new Teacher();
+		theModel.addAttribute("teacher", teacher);
+		
+		return "admin/teacher-form";
+	}
+	
+	@PostMapping("/teachers/save")
+	public String saveTeacher(@Valid @ModelAttribute("teacher") Teacher theTeacher, 
+			BindingResult theBindingResult) {
+		
+		if (theBindingResult.hasErrors()) {
+			return "admin/teacher-form";
+		}
+		
+		// Use AdminService for admin operations
+		if (theTeacher.getId() == 0) {
+			adminService.createTeacher(theTeacher);
+		} else {
+			adminService.updateTeacher(theTeacher);
+		}
+		
+		return "redirect:/admin/teachers";
+	}
+	
+	@GetMapping("/teachers/edit/{teacherId}")
+	public String editTeacher(@PathVariable("teacherId") int teacherId, Model theModel) {
+		Teacher teacher = teacherService.findByTeacherId(teacherId);
+		
+		if (teacher == null) {
+			return "redirect:/admin/teachers";
+		}
+		
+		theModel.addAttribute("teacher", teacher);
+		theModel.addAttribute("isEdit", true);
+		
+		return "admin/teacher-form";
+	}
+	
 	
 	@GetMapping("/addCourse")
 	public String addCourse(Model theModel) {
@@ -229,6 +269,7 @@ public class AdminController {
 		return "admin/course-list";
 	}
 	
+	
 	@GetMapping("/courses/delete")
 	public String deleteCourse(@RequestParam("courseId") int courseId) {		
 		Course course = courseService.findCourseById(courseId);
@@ -244,7 +285,6 @@ public class AdminController {
 		courseService.deleteCourseById(courseId);
 		return "redirect:/admin/courses";
 	}
-
 	
 	@GetMapping("/courses/{courseId}/students")
 	public String showSudents(@PathVariable("courseId") int courseId, Model theModel) {		

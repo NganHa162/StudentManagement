@@ -16,8 +16,8 @@ public class Assignment {
     }
 
     public Assignment(int id, int courseId, String title, String description, 
-                     String dueDate, double maxScore, String createdDate, 
-                     String status, int createdByTeacherId) {
+                    String dueDate, double maxScore, String createdDate, 
+                    String status, int createdByTeacherId) {
         this.id = id;
         this.courseId = courseId;
         this.title = title;

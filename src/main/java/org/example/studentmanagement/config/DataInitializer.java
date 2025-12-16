@@ -29,9 +29,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // DISABLED: Using mock-data.sql from Docker instead
-        // DataInitializer is disabled to avoid conflicts with database init scripts
-        System.out.println("DataInitializer: Skipped (using mock-data.sql from docker-compose)");
+        // Enabled: Seeding logical test data
+        initializeStudents();
+        initializeTeachers();
+        System.out.println("DataInitializer: Successfully created test students and teachers");
     }
 
     private void initializeStudents() {
@@ -52,7 +53,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
         Student student = new Student();
         student.setUserName(username);
-        student.setPassword(password);  // Don't encode - use plain text for testing
+        student.setPassword(password); // Don't encode - use plain text for testing
         student.setFirstName(firstName);
         student.setLastName(lastName);
         student.setEmail(email);
@@ -63,7 +64,7 @@ public class DataInitializer implements CommandLineRunner {
     private void createTeacher(String username, String password, String firstName, String lastName, String email) {
         Teacher teacher = new Teacher();
         teacher.setUserName(username);
-        teacher.setPassword(password);  // Don't encode - use plain text for testing
+        teacher.setPassword(password); // Don't encode - use plain text for testing
         teacher.setFirstName(firstName);
         teacher.setLastName(lastName);
         teacher.setEmail(email);
@@ -71,4 +72,3 @@ public class DataInitializer implements CommandLineRunner {
         teacherDAO.save(teacher);
     }
 }
-

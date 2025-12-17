@@ -36,3 +36,7 @@ docker-compose.yaml
 API_TESTING_GUIDE.md
 
 database/*
+
+### User Ignore Rules ###
+application.properties
+*.sql

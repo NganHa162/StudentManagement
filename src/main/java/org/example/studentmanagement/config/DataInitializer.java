@@ -51,6 +51,9 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
+        if (studentDAO.findByUserName(username).isPresent()) {
+            return;
+        }
         Student student = new Student();
         student.setUserName(username);
         student.setPassword(password); // Don't encode - use plain text for testing
@@ -62,6 +65,9 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createTeacher(String username, String password, String firstName, String lastName, String email) {
+        if (teacherDAO.findByUserName(username).isPresent()) {
+            return;
+        }
         Teacher teacher = new Teacher();
         teacher.setUserName(username);
         teacher.setPassword(password); // Don't encode - use plain text for testing

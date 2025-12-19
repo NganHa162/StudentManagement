@@ -5,7 +5,7 @@ public class LoginUI {
     private String password;
 
     public String render() {
-        return "login";
+        return "login/login-form";
     }
 
     public String getUsername() {

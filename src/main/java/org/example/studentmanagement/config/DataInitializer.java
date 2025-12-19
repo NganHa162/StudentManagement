@@ -1,7 +1,9 @@
 package org.example.studentmanagement.config;
 
+import org.example.studentmanagement.dao.AdminDAO;
 import org.example.studentmanagement.dao.StudentDAO;
 import org.example.studentmanagement.dao.TeacherDAO;
+import org.example.studentmanagement.entity.Admin;
 import org.example.studentmanagement.entity.Student;
 import org.example.studentmanagement.entity.Teacher;
 import org.springframework.boot.CommandLineRunner;
@@ -19,11 +21,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private final StudentDAO studentDAO;
     private final TeacherDAO teacherDAO;
+    private final AdminDAO adminDAO;
     private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(StudentDAO studentDAO, TeacherDAO teacherDAO, PasswordEncoder passwordEncoder) {
+    public DataInitializer(StudentDAO studentDAO, TeacherDAO teacherDAO, AdminDAO adminDAO, PasswordEncoder passwordEncoder) {
         this.studentDAO = studentDAO;
         this.teacherDAO = teacherDAO;
+        this.adminDAO = adminDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -47,6 +51,12 @@ public class DataInitializer implements CommandLineRunner {
         // Password: "teacher123"
         createTeacher("teacher11", "teacher123", "Pham", "Thi D", "teacher1@example.com");
         createTeacher("teacher21", "teacher123", "Hoang", "Van E", "teacher2@example.com");
+    }
+
+    private void initializeAdmins() {
+        // Create 1 test admin
+        // Password: "admin123"
+        createAdmin("admin", "admin123", "Admin", "User", "admin@example.com");
     }
 
     private void createStudent(String username, String password, String firstName, String lastName, String email) {
@@ -75,5 +85,15 @@ public class DataInitializer implements CommandLineRunner {
         teacher.setEmail(email);
         teacher.setCourses(new ArrayList<>());
         teacherDAO.save(teacher);
+    }
+
+    private void createAdmin(String username, String password, String firstName, String lastName, String email) {
+        Admin admin = new Admin();
+        admin.setUserName(username);
+        admin.setPassword(password);  // Don't encode - use plain text for testing
+        admin.setFirstName(firstName);
+        admin.setLastName(lastName);
+        admin.setEmail(email);
+        adminDAO.save(admin);
     }
 }

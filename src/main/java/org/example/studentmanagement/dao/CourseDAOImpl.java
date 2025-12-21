@@ -128,4 +128,25 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
             throw new RuntimeException("Error deleting course by id: " + e.getMessage(), e);
         }
     }
+
+    public Course findByCode(String code) {
+        String sql = "SELECT id, code, name, teacher_id FROM courses WHERE code = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, code);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Course c = new Course();
+                    c.setId(rs.getInt("id"));
+                    c.setCode(rs.getString("code"));
+                    c.setName(rs.getString("name"));
+                    return c;
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error finding course by code: " + e.getMessage(), e);
+        }
+    }
+
 }

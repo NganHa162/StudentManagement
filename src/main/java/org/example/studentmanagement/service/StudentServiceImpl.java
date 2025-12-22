@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentDAO studentDAO;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public Optional<Student> findByUserName(String userName) {
         return studentDAO.findByUserName(userName);
@@ -31,8 +33,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Autowired
-    public StudentServiceImpl(StudentDAO studentDAO) {
+    public StudentServiceImpl(StudentDAO studentDAO, PasswordEncoder passwordEncoder) {
         this.studentDAO = studentDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,6 +50,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void save(Student student) {
+        String rawPassword = student.getPassword();
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            student.setPassword(passwordEncoder.encode(rawPassword));
+        }
         studentDAO.save(student);
     }
 

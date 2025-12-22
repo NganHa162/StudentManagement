@@ -28,6 +28,7 @@ import org.example.studentmanagement.service.AssignmentDetailsService;
 import org.example.studentmanagement.service.StudentCourseDetailsService;
 import org.example.studentmanagement.service.StudentService;
 import org.example.studentmanagement.service.GradeDetailsService;
+import org.example.studentmanagement.service.AssignmentService;
 
 @Controller
 @RequestMapping("/student")
@@ -48,6 +49,9 @@ public class StudentController {
 	
 	@Autowired
 	private GradeDetailsService gradeDetailsService;
+
+	@Autowired
+	private AssignmentService assignmentService;
 	
 	@GetMapping("/dashboard")
 	public String dashboard(Authentication authentication, Model model) {
@@ -98,7 +102,8 @@ public class StudentController {
 		List<Course> courses = student.getCourses();
 		Course course = courseService.findCourseById(courseId);
 		StudentCourseDetails studentCourseDetails = studentCourseDetailsService.findByStudentAndCourseId(studentId, courseId);
-		Assignment assignment = studentCourseDetails.getAssignmentById(assignmentId);
+		// Lấy assignment trực tiếp từ database để đảm bảo có đầy đủ thông tin (title, description, ...)
+		Assignment assignment = assignmentService.findById(assignmentId);
 		AssignmentDetails assignmentDetails = assignmentDetailsService.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
 		
 		// Get grade for this assignment

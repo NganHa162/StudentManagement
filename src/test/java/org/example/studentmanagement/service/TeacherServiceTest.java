@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,13 @@ class TeacherServiceTest {
 
     private TeacherServiceImpl teacherService;
     private TeacherDAO teacherDAO;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         teacherDAO = mock(TeacherDAO.class);
-        teacherService = new TeacherServiceImpl(teacherDAO);
+        passwordEncoder = mock(PasswordEncoder.class);
+        teacherService = new TeacherServiceImpl(teacherDAO, passwordEncoder);
     }
 
     @Test
@@ -175,11 +178,13 @@ class TeacherServiceTest {
     void save_delegatesToDAO() {
         // Arrange
         Teacher teacher = new Teacher(0, "new_prof", "password", "New", "Teacher", "new@test.com", new ArrayList<>());
+        when(passwordEncoder.encode("password")).thenReturn("encoded_password");
 
         // Act
         teacherService.save(teacher);
 
         // Assert
+        verify(passwordEncoder).encode("password");
         verify(teacherDAO).save(teacher);
     }
 
@@ -191,11 +196,13 @@ class TeacherServiceTest {
                 new Course(2, "SCI101", "Science", null, null)
         );
         Teacher teacher = new Teacher(1, "prof", "pass", "John", "Doe", "prof@test.com", courses);
+        when(passwordEncoder.encode("pass")).thenReturn("encoded_pass");
 
         // Act
         teacherService.save(teacher);
 
         // Assert
+        verify(passwordEncoder).encode("pass");
         verify(teacherDAO).save(teacher);
     }
 
@@ -297,4 +304,3 @@ class TeacherServiceTest {
         verify(teacherDAO).findById(1);
     }
 }
-

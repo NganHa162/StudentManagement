@@ -1,0 +1,149 @@
+/* Khai báo biến CSS mới */
+:root {
+	--course-color: #3498db; /* Xanh Dương Sáng */
+    --student-color: #2ecc71; /* Xanh Lá Cây Sáng */
+    --teacher-color: #9b59b6; /* Tím Lavender Đậm */
+    --background-light: #f7f8fa;
+    --text-light: #ffffff;
+    --shadow-base: rgba(0, 0, 0, 0.15);
+	--hover-shadow: rgba(0, 0, 0, 0.25);
+    --card-radius: 15px; /* Tăng độ bo tròn */
+}
+
+/* --- Vùng Content và Tiêu đề (Giữ nguyên) --- */
+h3 {
+    text-align: center;
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 30px;
+    padding-top: 40px;
+	font-weight: 600;
+}
+
+.content {
+    padding: 20px;
+}
+
+/* --- Vùng Card Container (Sử dụng Flexbox) --- */
+.card-container {
+    width: 90%;
+    max-width: 1100px; /* Tăng max-width để card rộng hơn */
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between; /* Cân đối khoảng cách */
+    gap: 30px; /* Khoảng cách giữa các card */
+}
+
+/* --- Thiết kế Card --- */
+.card {
+    /* Đảm bảo 3 card nằm trên một hàng, mỗi card chiếm khoảng 30% */
+    flex: 1 1 30%; 
+    min-width: 200px; /* Giảm min-width cho màn hình nhỏ */
+
+    border-radius: var(--card-radius);
+    box-shadow: 0 6px 15px var(--shadow-base); /* Shadow sâu hơn */
+    padding: 20px; 
+    text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    
+    /* Bố cục nội dung bên trong card */
+    display: flex;
+    justify-content: space-between; /* Đẩy số lượng sang phải */
+    align-items: center;
+	height: 120px;
+}
+
+.card:hover {
+    transform: translateY(-5px); 
+    box-shadow: 0 10px 20px var(--hover-shadow);
+}
+
+.card-info { /* Vùng chứa icon và tên danh mục */
+    display: flex;
+    align-items: center;
+}
+
+.card i {
+    /* Thiết kế icon nổi bật */
+    font-size: 30px !important; 
+    width: 65px;
+    height: 65px;
+    line-height: 65px;
+    border-radius: 50%;
+    background-color: var(--background-light); 
+    color: var(--course-color); /* Màu icon đồng nhất với màu card ban đầu */
+    margin-right: 20px;
+    text-align: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.card span {
+    font-size: 20px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Vùng hiển thị số lượng (th:text) */
+.card-value {
+    font-size: 48px;
+    font-weight: bold;
+    color: var(--text-light);
+}
+
+
+/* --- Tùy chỉnh màu Card MỚI --- */
+
+/* Courses */
+.card.courses {
+    background-color: var(--course-color);
+}
+.card.courses i {
+    color: var(--course-color);
+}
+
+/* Students */
+.card.students {
+    background-color: var(--student-color);
+}
+.card.students i {
+    color: var(--student-color);
+}
+
+/* Teachers */
+.card.teachers {
+    background-color: var(--teacher-color);
+}
+.card.teachers i {
+    color: var(--teacher-color);
+}
+
+
+/* --- Media Query cho khả năng đáp ứng (Responsive) --- */
+
+/* Màn hình Tablet */
+@media screen and (max-width: 992px) {
+  .card {
+    flex: 1 1 45%; /* 2 card trên 1 hàng */
+  }
+  .card-container {
+    justify-content: center; /* Căn giữa khi chỉ còn 2 hoặc 3 card */
+  }
+}
+
+/* Màn hình Mobile */
+@media screen and (max-width: 576px) {
+  .card {
+    flex: 1 1 100%; /* 1 card trên 1 hàng */
+    height: 100px;
+  }
+  .card-value {
+      font-size: 36px;
+  }
+  .card i {
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+  }
+}

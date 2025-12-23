@@ -55,9 +55,9 @@
 	
 	<div class="content">
 	
-	<div th:if="${courses.size() == 0}">There are no courses. Please add new courses clicking on the button below.</div>
-	
-	<div th:if="${courses.size() != 0}">
+	<div th:if="${#lists.isEmpty(courses)}">There are no courses. Please add new courses clicking on the button below.</div>
+    
+	<div th:if="${!#lists.isEmpty(courses)}">
 	
 	<table>
 		<thead>

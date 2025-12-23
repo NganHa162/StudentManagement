@@ -46,3 +46,22 @@ td i {
   	width: 80%;
   }
 }
+
+/* Admin student list specific tweaks */
+.content { padding: 20px; }
+
+h3 { margin-top: 10px; margin-bottom: 8px; }
+
+.add-button { margin-left: 10px; }
+
+/* Make action buttons compact */
+.action-col .button { margin-right: 6px; }
+
+/* Improve responsive table wrapping */
+@media screen and (max-width: 700px) {
+	table, thead, tbody, th, td, tr { display: block; }
+	thead { display: none; }
+	tr { margin-bottom: 12px; }
+	td { padding: 8px 10px; }
+	td::before { content: attr(data-label); font-weight: 600; display: inline-block; width: 110px; }
+}

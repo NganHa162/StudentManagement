@@ -13,7 +13,7 @@
 	
 	<link rel="stylesheet" th:href="@{/css/button.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/admin/teacher-list.css}"> 
+	<link rel="stylesheet" th:href="@{/css/admin/list.css}"> 
     
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -51,10 +51,17 @@
 	
 	<div class="content">
 	<h3>Teacher List</h3>
+
+	<!-- Add Teacher button -->
+	<div style="margin:12px 0;">
+		<a class="button add-button" th:href="@{/admin/teachers/add}">
+			<i class="fa fa-plus"></i> <span>Add Teacher</span>
+		</a>
+	</div>
 	
-	<div th:if="${teachers.size() == 0}">There are no teachers.</div>
-	
-	<div th:if="${teachers.size() != 0}">
+	<div th:if="${#lists.isEmpty(teachers)}">There are no teachers.</div>
+    
+	<div th:if="${!#lists.isEmpty(teachers)}">
 	<table>
 		<thead>
 			<tr>
@@ -71,10 +78,10 @@
 				<td th:text="${teacher.firstName}">
 				<td th:text="${teacher.lastName}">
 				<td th:text="${teacher.email}">				
-				<td th:if="${teacher.getCourses.size() != 0}">
+				<td th:if="${!#lists.isEmpty(teacher.courses)}">
 					<span th:each="course : ${teacher.courses}" th:text="${course.name + ' '}"></span>
 				</td>
-				<td th:if="${teacher.getCourses.size() == 0}">
+				<td th:if="${#lists.isEmpty(teacher.courses)}">
 					No Courses
 				</td>
 				<td class="short-col">

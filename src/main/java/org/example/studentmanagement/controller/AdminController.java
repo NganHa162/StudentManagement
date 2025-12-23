@@ -125,8 +125,14 @@ public class AdminController {
 	@GetMapping("/students/{studentId}/courses")
 	public String editCoursesForStudent(@PathVariable("studentId") int studentId, Model theModel) {
 		Student student = studentService.findByStudentId(studentId);
+		if (student == null) {
+			return "redirect:/admin/students";
+		}
+		// ensure we don't pass a null list to the template
 		List<Course> courses = student.getCourses();
-		
+		if (courses == null) {
+			courses = new ArrayList<>();
+		}
 		theModel.addAttribute("student", student);
 		theModel.addAttribute("courses", courses);
 		
@@ -136,10 +142,17 @@ public class AdminController {
 	@GetMapping("/students/{studentId}/addCourse")
 	public String addCourseToStudent(@PathVariable("studentId") int studentId, Model theModel) {
 		Student student = studentService.findByStudentId(studentId);
+		if (student == null) {
+			return "redirect:/admin/students";
+		}
+		// avoid NPE if student's courses is null
+		if (student.getCourses() == null) {
+			student.setCourses(new ArrayList<>());
+		}
 		List<Course> courses = courseService.findAllCourses();
 		
-		for(int i = 0; i < courses.size(); i++) { //finding the courses that the current student has not enrolled yet
-			if(student.getCourses().contains(courses.get(i))) {
+		for (int i = 0; i < courses.size(); i++) { // finding the courses that the current student has not enrolled yet
+			if (student.getCourses().contains(courses.get(i))) {
 				courses.remove(i);
 				i--;
 			}
@@ -184,11 +197,16 @@ public class AdminController {
 	@GetMapping("/teachers/delete")
 	public String deleteTeacher(@RequestParam("teacherId") int teacherId) {
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
-		if(teacher.getCourses().size() == 0) { //if the teacher has courses assigned, the teacher cannot be deleted
+		if (teacher == null) {
+			return "redirect:/admin/teachers";
+		}
+		// guard against null courses list
+		List<Course> courses = teacher.getCourses();
+		if (courses == null || courses.isEmpty()) { // if no assigned courses, safe to delete
 			teacherService.deleteTeacherById(teacherId);
 			teacherDeleteErrorValue = 0;
 		} else {
-			teacherDeleteErrorValue = 1; 
+			teacherDeleteErrorValue = 1;
 		}
 		
 		return "redirect:/admin/teachers";

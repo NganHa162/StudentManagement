@@ -32,9 +32,12 @@ td i {
 
 .add-button {
 	background-color: rgba(19, 103, 200, 1);
-	width: 130px;
-    line-height: 36px;
-    margin-top: 15px;
+	min-width: 160px;
+	line-height: 36px;
+	margin-top: 15px;
+	white-space: nowrap;
+	padding: 8px 18px;
+	font-size: 1.1em;
 }
 
 .add-button:hover {

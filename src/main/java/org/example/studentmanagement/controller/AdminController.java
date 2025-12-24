@@ -175,12 +175,12 @@ public class AdminController {
 	
 	@GetMapping("/students/{studentId}/courses/delete/{courseId}")
 	public String deleteCourseFromStudent(@PathVariable("studentId") int studentId, @PathVariable("courseId") int courseId) {
-		StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(studentId, courseId);
-		int gradeId = scd.getGradeDetails().getId();
-		
-		//operations for removing the student from the course
 		studentCourseDetailsService.deleteByStudentAndCourseId(studentId, courseId);
-		gradeDetailsService.deleteById(gradeId);
+		
+		List<GradeDetails> gradeDetailsList = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
+		for (GradeDetails gd : gradeDetailsList) {
+			gradeDetailsService.deleteById(gd.getId());
+		}
 		
 		return "redirect:/admin/students/" + studentId + "/courses";
 	}
@@ -206,7 +206,13 @@ public class AdminController {
 			teacherService.deleteTeacherById(teacherId);
 			teacherDeleteErrorValue = 0;
 		} else {
-			teacherDeleteErrorValue = 1;
+			// Update courses to set teacher_id to null
+			for (Course course : courses) {
+				course.setTeacher(null);
+				courseService.save(course);
+			}
+			teacherService.deleteTeacherById(teacherId);
+			teacherDeleteErrorValue = 0;
 		}
 		
 		return "redirect:/admin/teachers";
@@ -319,11 +325,12 @@ public class AdminController {
 	
 	@GetMapping("/courses/{courseId}/students/delete")
 	public String deleteStudentFromCourse(@PathVariable("courseId") int courseId, @RequestParam("studentId") int studentId) {
-		StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(studentId, courseId);
-		int gradeId = scd.getGradeDetails().getId();
-		
 		studentCourseDetailsService.deleteByStudentAndCourseId(studentId, courseId);
-		gradeDetailsService.deleteById(gradeId);
+		
+		List<GradeDetails> gradeDetailsList = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
+		for (GradeDetails gd : gradeDetailsList) {
+			gradeDetailsService.deleteById(gd.getId());
+		}
 		
 		return "redirect:/admin/courses/" + courseId + "/students";
 	}
@@ -349,7 +356,7 @@ public class AdminController {
 	@RequestMapping("/courses/{courseId}/students/addStudent/save")
 	public String saveStudentToCourse(@RequestParam("studentId") int studentId, @PathVariable("courseId") int courseId) {
 		
-		StudentCourseDetails sc = new StudentCourseDetails(0, studentId, courseId, new GradeDetails(), new ArrayList<Assignment>());
+		StudentCourseDetails sc = new StudentCourseDetails(0, studentId, courseId, null, new ArrayList<Assignment>());
 		studentCourseDetailsService.save(sc);
 		
 		return "redirect:/admin/courses/" + courseId + "/students";

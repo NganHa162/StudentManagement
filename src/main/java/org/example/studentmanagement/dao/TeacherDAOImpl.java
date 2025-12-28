@@ -1,5 +1,6 @@
 package org.example.studentmanagement.dao;
 
+import org.example.studentmanagement.entity.Course;
 import org.example.studentmanagement.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -77,7 +78,24 @@ public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements Tea
                 teacher.setFirstName(rs.getString("first_name"));
                 teacher.setLastName(rs.getString("last_name"));
                 teacher.setEmail(rs.getString("email"));
-                // Note: Courses will need to be loaded separately if needed
+                
+                // Load courses
+                List<Course> courses = new ArrayList<>();
+                String courseSql = "SELECT id, code, name FROM courses WHERE teacher_id = ?";
+                try (PreparedStatement coursePstmt = conn.prepareStatement(courseSql)) {
+                    coursePstmt.setInt(1, teacher.getId());
+                    try (ResultSet courseRs = coursePstmt.executeQuery()) {
+                        while (courseRs.next()) {
+                            Course course = new Course();
+                            course.setId(courseRs.getInt("id"));
+                            course.setCode(courseRs.getString("code"));
+                            course.setName(courseRs.getString("name"));
+                            courses.add(course);
+                        }
+                    }
+                }
+                teacher.setCourses(courses);
+                
                 teachers.add(teacher);
             }
             

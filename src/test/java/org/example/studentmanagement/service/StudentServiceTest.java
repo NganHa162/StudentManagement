@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,13 @@ class StudentServiceTest {
 
     private StudentServiceImpl studentService;
     private StudentDAO studentDAO;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
         studentDAO = mock(StudentDAO.class);
-        studentService = new StudentServiceImpl(studentDAO);
+        passwordEncoder = mock(PasswordEncoder.class);
+        studentService = new StudentServiceImpl(studentDAO, passwordEncoder);
     }
 
     @Test
@@ -175,11 +178,13 @@ class StudentServiceTest {
     void save_delegatesToDAO() {
         // Arrange
         Student student = new Student(0, "new_student", "password", "New", "Student", "new@test.com", new ArrayList<>());
+        when(passwordEncoder.encode("password")).thenReturn("encoded_password");
 
         // Act
         studentService.save(student);
 
         // Assert
+        verify(passwordEncoder).encode("password");
         verify(studentDAO).save(student);
     }
 
@@ -191,11 +196,13 @@ class StudentServiceTest {
                 new Course(2, "Science", "SCI101", null, null)
         );
         Student student = new Student(1, "john", "pass", "John", "Doe", "john@test.com", courses);
+        when(passwordEncoder.encode("pass")).thenReturn("encoded_pass");
 
         // Act
         studentService.save(student);
 
         // Assert
+        verify(passwordEncoder).encode("pass");
         verify(studentDAO).save(student);
     }
 
@@ -237,4 +244,3 @@ class StudentServiceTest {
         verify(studentDAO).findByUserName("test");
     }
 }
-

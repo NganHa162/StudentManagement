@@ -1,0 +1,56 @@
+/* Shared admin list styles for student-list and teacher-list */
+
+h3 {
+    font-size: 24px;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
+table {
+    width: 90%;
+}
+
+/* Support both class names used across templates */
+.short-col, .short-cell {
+    width: 100px;
+}
+
+.action-col {
+    width: 130px;
+}
+
+td i {
+    display: none !important;
+}
+
+#alert {
+    margin-top: 20px;
+    color: #ff1616;
+}
+
+.content { padding: 20px; }
+.add-button { margin-left: 10px; }
+.action-col .button { margin-right: 6px; }
+
+@media screen and (max-width: 900px) {
+  .short-col { width: 55px; }
+  .short-cell { width: 60px; }
+  td i { display: inline-block !important; }
+  td a span { display: none !important; }
+  td span { display: none !important; }
+  table .button { width: 30px; line-height: 30px; }
+}
+
+@media screen and (min-width: 1420px) {
+  table { width: 80%; }
+}
+
+/* Responsive table stacking for small screens */
+@media screen and (max-width: 700px) {
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tr { margin-bottom: 12px; }
+    td { padding: 8px 10px; }
+    td::before { content: attr(data-label); font-weight: 600; display: inline-block; width: 110px; }
+}

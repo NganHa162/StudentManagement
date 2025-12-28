@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherDAO teacherDAO;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public TeacherServiceImpl(TeacherDAO teacherDAO) {
+    public TeacherServiceImpl(TeacherDAO teacherDAO, PasswordEncoder passwordEncoder) {
         this.teacherDAO = teacherDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -33,6 +36,14 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void save(Teacher teacher) {
+        // Nếu mật khẩu chưa mã hóa (không bắt đầu bằng {bcrypt} hoặc không ở dạng BCrypt)
+        // thì mã hóa trước khi lưu để đảm bảo Spring Security so khớp đúng.
+        String rawPassword = teacher.getPassword();
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            // Bạn có thể thêm check để tránh double-encode nếu cần thiết,
+            // ví dụ kiểm tra prefix hoặc độ dài chuỗi.
+            teacher.setPassword(passwordEncoder.encode(rawPassword));
+        }
         teacherDAO.save(teacher);
     }
 

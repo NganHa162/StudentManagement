@@ -1,6 +1,8 @@
 package org.example.studentmanagement.dao;
 
+import org.example.studentmanagement.entity.Course;
 import org.example.studentmanagement.entity.Student;
+import org.example.studentmanagement.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -107,7 +109,33 @@ public class StudentDAOImpl extends BaseDAOImpl<Student, Integer> implements Stu
                     student.setFirstName(rs.getString("first_name"));
                     student.setLastName(rs.getString("last_name"));
                     student.setEmail(rs.getString("email"));
-                    // Note: Courses will need to be loaded separately if needed
+                    
+                    // Load courses
+                    List<Course> courses = new ArrayList<>();
+                    String courseSql = "SELECT c.id, c.code, c.name, t.first_name AS firstName, t.last_name AS lastName FROM courses c JOIN student_course_details scd ON c.id = scd.course_id LEFT JOIN teachers t ON c.teacher_id = t.id WHERE scd.student_id = ?";
+                    try (PreparedStatement coursePstmt = conn.prepareStatement(courseSql)) {
+                        coursePstmt.setInt(1, id);
+                        try (ResultSet courseRs = coursePstmt.executeQuery()) {
+                            while (courseRs.next()) {
+                                Course course = new Course();
+                                course.setId(courseRs.getInt("id"));
+                                course.setCode(courseRs.getString("code"));
+                                course.setName(courseRs.getString("name"));
+                                
+                                // Set teacher if exists
+                                String firstName = courseRs.getString("firstName");
+                                if (firstName != null) {
+                                    Teacher teacher = new Teacher();
+                                    teacher.setFirstName(firstName);
+                                    teacher.setLastName(courseRs.getString("lastName"));
+                                    course.setTeacher(teacher);
+                                }
+                                
+                                courses.add(course);
+                            }
+                        }
+                    }
+                    student.setCourses(courses);
                 }
             }
             

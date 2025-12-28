@@ -1,12 +1,15 @@
 package org.example.studentmanagement.dao;
 
 import org.example.studentmanagement.entity.Course;
+import org.example.studentmanagement.entity.Student;
+import org.example.studentmanagement.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 
 @Repository
@@ -65,7 +68,7 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
     @Override
     public List<Course> findAll(){
         List<Course> courses = new ArrayList<>();
-        String sql = "SELECT id, code, name, teacher_id FROM courses";
+        String sql = "SELECT c.id, c.code, c.name, c.teacher_id, t.first_name AS firstName, t.last_name AS lastName FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id";
         
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -76,7 +79,34 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                 course.setId(rs.getInt("id"));
                 course.setCode(rs.getString("code"));
                 course.setName(rs.getString("name"));
-                // Note: Teacher and Students will need to be loaded separately if needed
+                
+                // Set teacher if exists
+                int teacherId = rs.getInt("teacher_id");
+                if (!rs.wasNull()) {
+                    Teacher teacher = new Teacher();
+                    teacher.setId(teacherId);
+                    teacher.setFirstName(rs.getString("firstName"));
+                    teacher.setLastName(rs.getString("lastName"));
+                    course.setTeacher(teacher);
+                }
+                
+                // Load students
+                List<Student> students = new ArrayList<>();
+                String studentSql = "SELECT s.id, s.first_name, s.last_name FROM students s JOIN student_course_details scd ON s.id = scd.student_id WHERE scd.course_id = ?";
+                try (PreparedStatement studentPstmt = conn.prepareStatement(studentSql)) {
+                    studentPstmt.setInt(1, course.getId());
+                    try (ResultSet studentRs = studentPstmt.executeQuery()) {
+                        while (studentRs.next()) {
+                            Student student = new Student();
+                            student.setId(studentRs.getInt("id"));
+                            student.setFirstName(studentRs.getString("first_name"));
+                            student.setLastName(studentRs.getString("last_name"));
+                            students.add(student);
+                        }
+                    }
+                }
+                course.setStudents(students);
+                
                 courses.add(course);
             }
             
@@ -89,7 +119,7 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
 
     @Override
     public Course findById(Integer id){
-        String sql = "SELECT id, code, name, teacher_id FROM courses WHERE id = ?";
+        String sql = "SELECT c.id, c.code, c.name, c.teacher_id, t.first_name AS firstName, t.last_name AS lastName FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id WHERE c.id = ?";
         Course course = null;
         
         try (Connection conn = dataSource.getConnection();
@@ -103,7 +133,33 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                     course.setId(rs.getInt("id"));
                     course.setCode(rs.getString("code"));
                     course.setName(rs.getString("name"));
-                    // Note: Teacher and Students will need to be loaded separately if needed
+                    
+                    // Set teacher if exists
+                    int teacherId = rs.getInt("teacher_id");
+                    if (!rs.wasNull()) {
+                        Teacher teacher = new Teacher();
+                        teacher.setId(teacherId);
+                        teacher.setFirstName(rs.getString("firstName"));
+                        teacher.setLastName(rs.getString("lastName"));
+                        course.setTeacher(teacher);
+                    }
+                    
+                    // Load students
+                    List<Student> students = new ArrayList<>();
+                    String studentSql = "SELECT s.id, s.first_name, s.last_name FROM students s JOIN student_course_details scd ON s.id = scd.student_id WHERE scd.course_id = ?";
+                    try (PreparedStatement studentPstmt = conn.prepareStatement(studentSql)) {
+                        studentPstmt.setInt(1, id);
+                        try (ResultSet studentRs = studentPstmt.executeQuery()) {
+                            while (studentRs.next()) {
+                                Student student = new Student();
+                                student.setId(studentRs.getInt("id"));
+                                student.setFirstName(studentRs.getString("first_name"));
+                                student.setLastName(studentRs.getString("last_name"));
+                                students.add(student);
+                            }
+                        }
+                    }
+                    course.setStudents(students);
                 }
             }
             

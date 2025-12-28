@@ -3,18 +3,18 @@
 <html>
 
 <head>
-	<title>Teacher List</title>
+	<title>Course List</title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	 
-    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+		 
+	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
 	<link rel="stylesheet" th:href="@{/css/table.css}">
 	
 	<link rel="stylesheet" th:href="@{/css/button.css}">
 	
-	<link rel="stylesheet" th:href="@{/css/admin/list.css}"> 
-    
+	<link rel="stylesheet" th:href="@{/css/admin/course-list.css}">
+	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
@@ -50,51 +50,44 @@
 	</div>
 	
 	<div class="content">
-	<h3>Teacher List</h3>
-
-	<!-- Add Teacher button -->
-	<div style="margin:12px 0;">
-		<a class="button add-button" th:href="@{/admin/teachers/add}">
-			<i class="fa fa-plus"></i> <span>Add Teacher</span>
-		</a>
-	</div>
 	
-	<div th:if="${#lists.isEmpty(teachers)}">There are no teachers.</div>
-    
-	<div th:if="${!#lists.isEmpty(teachers)}">
+	<h3>Course List</h3>
+	
+	<div class="container">
+	
+	<div th:if="${courses.size() == 0}">There are no courses.</div>
+	
+	<div th:if="${courses.size() != 0}">
 	<table>
+	
 		<thead>
 			<tr>
-				<th id="table-top-left">First Name</th>
-				<th>Last Name</th>
-				<th>Email</th>			
-				<th>Courses</th>
+				<th id="table-top-left">Code</th>
+				<th>Name</th>
+				<th>Teacher</th>
 				<th id="table-top-right" class="short-col">Action</th>
 			</tr>
 		</thead>
 		
 		<tbody>
-			<tr th:each="teacher : ${teachers}">
-				<td th:text="${teacher.firstName}">
-				<td th:text="${teacher.lastName}">
-				<td th:text="${teacher.email}">				
-				<td th:if="${!#lists.isEmpty(teacher.courses)}">
-					<span th:each="course : ${teacher.courses}" th:text="${course.name + ' '}"></span>
-				</td>
-				<td th:if="${#lists.isEmpty(teacher.courses)}">
-					No Courses
-				</td>
+			<tr th:each="course : ${courses}">
+				<td th:text="${course.code}">
+				<td th:text="${course.name}">
+				<td th:text="${course.teacher != null ? course.teacher.firstName + ' ' + course.teacher.lastName : 'N/A'}">
 				<td class="short-col">
-					<a class="button delete-button" th:href="@{/admin/teachers/delete(teacherId=${teacher.id})}"
-					onclick="if (!(confirm('Are you sure you want to delete?'))) return false">
+					<a class="button" th:href="@{/admin/courses/{courseId}/students(courseId=${course.id})}">
+					<i class="fa fa-eye"></i> <span>View</span></a>
+					<a class="button delete-button" th:href="@{/admin/courses/delete(courseId=${course.id})}"
+							onclick="if (!(confirm('Are you sure you want to delete?'))) return false">
 					<i class="fa fa-trash"></i><span>Delete<span></a>
 				</td>
 			</tr>
+				
 		</tbody>
-	
+		
 	</table>
-	<!-- if the teacher has courses assigned, it pops a warning -->
-	<div id="alert" th:if="${error == 1}">Warning: Teacher should not have any assigned courses in order to delete it!</div>
+	</div>
+	<a class="button add-button" th:href="@{/admin/addCourse}">Create New Course</a>
 	</div>
 	
 	</div>

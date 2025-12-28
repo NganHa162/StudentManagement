@@ -33,8 +33,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    public List<Assignment> findByCourseId(int courseId) {
+        return assignmentDAO.findByCourseId(courseId);
+    }
+
+    @Override
     public void deleteAssignmentById(int id) {
         assignmentDAO.deleteById(id);
     }
 }
-

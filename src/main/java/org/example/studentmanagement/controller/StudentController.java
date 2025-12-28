@@ -54,7 +54,15 @@ public class StudentController {
 
 	@GetMapping("/dashboard")
 	public String dashboard(Authentication authentication, Model model) {
-		model.addAttribute("username", authentication.getName());
+		String username = authentication.getName();
+		model.addAttribute("username", username);
+
+		// Add student object to model for navigation links
+		java.util.Optional<Student> studentOpt = studentService.findByUserName(username);
+		if (studentOpt.isPresent()) {
+			model.addAttribute("student", studentOpt.get());
+		}
+
 		return "student/dashboard";
 	}
 
@@ -119,43 +127,60 @@ public class StudentController {
 	}
 
 	@GetMapping("/{studentId}/courses/{courseId}/assignment/{assignmentId}")
-	@ResponseBody
-	public ResponseEntity<Map<String, Object>> showStudentAssignment(@PathVariable("studentId") int studentId,
+	public String showStudentAssignment(@PathVariable("studentId") int studentId,
 			@PathVariable("courseId") int courseId,
-			@PathVariable("assignmentId") int assignmentId) {
+			@PathVariable("assignmentId") int assignmentId, Model theModel) {
 		Student student = studentService.findByStudentId(studentId);
 		List<Course> courses = student.getCourses();
 		Course course = courseService.findCourseById(courseId);
 		StudentCourseDetails studentCourseDetails = studentCourseDetailsService.findByStudentAndCourseId(studentId,
 				courseId);
-		// Lấy assignment trực tiếp từ database để đảm bảo có đầy đủ thông tin (title,
-		// description, ...)
+
 		Assignment assignment = assignmentService.findById(assignmentId);
-		AssignmentDetails assignmentDetails = assignmentDetailsService
-				.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
+
+		if (assignment == null) {
+			return "redirect:/student/" + studentId + "/courses/" + courseId;
+		}
+
+		// Calculate days remaining
+		int daysRemaining = findDayDifference(assignment);
+		assignment.setDaysRemaining(daysRemaining);
+
+		AssignmentDetails assignmentDetails = null;
+		if (studentCourseDetails != null) {
+			assignmentDetails = assignmentDetailsService
+					.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
+		}
+
+		if (assignmentDetails == null) {
+			assignmentDetails = new AssignmentDetails();
+			assignmentDetails.setAssignmentId(assignmentId);
+			// Default to incomplete (0)
+			assignmentDetails.setIsDone(0);
+		}
 
 		// Get grade for this assignment
 		GradeDetails assignmentGrade = null;
 		if (assignment != null) {
 			List<GradeDetails> allGrades = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
-			for (GradeDetails grade : allGrades) {
-				if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
-					assignmentGrade = grade;
-					break;
+			if (allGrades != null) {
+				for (GradeDetails grade : allGrades) {
+					if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
+						assignmentGrade = grade;
+						break;
+					}
 				}
 			}
 		}
 
-		// Build JSON response
-		Map<String, Object> response = new HashMap<>();
-		response.put("assignment", assignment);
-		response.put("assignmentDetails", assignmentDetails);
-		response.put("assignmentGrade", assignmentGrade);
-		response.put("course", course);
-		response.put("courses", courses);
-		response.put("student", student);
+		theModel.addAttribute("assignment", assignment);
+		theModel.addAttribute("assignmentDetails", assignmentDetails);
+		theModel.addAttribute("assignmentGrade", assignmentGrade);
+		theModel.addAttribute("course", course);
+		theModel.addAttribute("courses", courses);
+		theModel.addAttribute("student", student);
 
-		return ResponseEntity.ok(response);
+		return "student/student-assignment-detail";
 	}
 
 	@GetMapping("/{studentId}/courses/{courseId}/markAsCompleted/{assignmentId}")
@@ -165,16 +190,30 @@ public class StudentController {
 		// Course course = courseService.findCourseById(courseId);
 		StudentCourseDetails studentCourseDetails = studentCourseDetailsService.findByStudentAndCourseId(studentId,
 				courseId);
-		AssignmentDetails assignmentDetails = assignmentDetailsService
-				.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
-		assignmentDetails.setIsDone(1); // assignment is completed
-		assignmentDetailsService.save(assignmentDetails);
+
+		if (studentCourseDetails != null) {
+			AssignmentDetails assignmentDetails = assignmentDetailsService
+					.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
+
+			if (assignmentDetails == null) {
+				assignmentDetails = new AssignmentDetails();
+				assignmentDetails.setAssignmentId(assignmentId);
+				assignmentDetails.setStudentCourseDetailsId(studentCourseDetails.getId());
+			}
+
+			assignmentDetails.setIsDone(1); // assignment is completed
+			assignmentDetailsService.save(assignmentDetails);
+		}
+
 		return "redirect:/student/" + studentId + "/courses/" + courseId + "/assignment/" + assignmentId;
 	}
 
 	// helper method to find day difference between assignment due date and today
 	private int findDayDifference(Assignment assignment) {
 		String dateString = assignment.getDueDate();
+		if (dateString == null) {
+			return 0;
+		}
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		try {
 			LocalDate dueDate = LocalDate.parse(dateString, dtf);
@@ -184,9 +223,8 @@ public class StudentController {
 			return dayDiff;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			return 0;
 		}
-
-		return -1;
 	}
 }

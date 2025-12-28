@@ -38,5 +38,4 @@ API_TESTING_GUIDE.md
 database/*
 
 ### User Ignore Rules ###
-*.sql
 .DS_Store

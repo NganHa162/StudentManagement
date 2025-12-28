@@ -6,12 +6,12 @@ h3 {
 
 table {
 	border-collapse: collapse;
-	text-align: center;	
+	text-align: center;
 }
 
 thead {
 	height: 1.5em;
-	text-align: center;	
+	text-align: center;
 }
 
 
@@ -21,7 +21,8 @@ th {
 	color: white;
 }
 
-th,td {
+th,
+td {
 	width: 15%;
 	padding-left: 0.3em;
 }
@@ -40,74 +41,93 @@ tr {
 }
 
 
+
+.card-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 20px;
+	width: 90%;
+	margin: 0 auto;
+}
+
 .card {
-	display: inline-block;
-	
-    width: 30%;
-    max-width: 250px;
-    min-width: 160px;
-    text-align: center;    
-    margin: 2%;
-    margin-left: 0px;
-    position: relative;
+	width: 300px;
+	height: 180px;
+	background-color: #ffffff;
+	background-image: url("https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=2673&auto=format&fit=crop");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	border-radius: 16px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+	position: relative;
+	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	overflow: hidden;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+	border-color: rgba(67, 67, 244, 0.3);
 }
 
 .card a {
 	text-decoration: none;
-	display: block;
-	background-color: #1367c8;
-	border-radius: 5px;
-	height: 90px;
-}
-
-.card a:hover {
-	background-color: rgba(19, 103, 200, 0.7);
-}
-
-.fa-clipboard-list {
-	color: rgba(19, 103, 200, 1);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 100%;
+	width: 100%;
 }
 
 .card i {
-	width: 40px;
-    line-height: 40px;
-    border-radius: 100px;
-    background-color: #f7f8fa;
-    font-size: 20px;
-    position: absolute;
-    left: 15%;
-    top: 50%;
-    transform: translateY(-50%);
+	/* Hiding the icon as the background image is decorative enough, or styling it purely as an accent if needed */
+	display: none;
 }
-
-.card span {
-	font-size: 20px;
-	color: #f7f8fa;
-}
-
 
 #card-name {
-	line-height: 20px;
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translateY(-30%);	
+	display: block;
+	width: 100%;
+	text-align: center;
+	font-size: 18px;
+	font-weight: 700;
+	color: #2c3e50;
+	background-color: rgba(255, 255, 255, 0.9);
+	padding: 15px 10px;
+	margin-top: auto;
+	/* Pushes to bottom */
+	border-top: 1px solid #eee;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover #card-name {
+	color: #fff;
+	background-color: #4a90e2;
 }
 
 #card-day {
-	line-height: 20px;
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translateY(-70%);
+	background-color: rgba(255, 255, 255, 0.8);
+	color: #333;
+	padding: 5px 10px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: bold;
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 @media screen and (max-width: 557px) {
-  .card-container {
-  	width: 165px;
-  }
-  
-  .card {
-  	margin-bottom: 10px;
-  }
+	.card-container {
+		width: 165px;
+	}
+
+	.card {
+		margin-bottom: 10px;
+	}
 }

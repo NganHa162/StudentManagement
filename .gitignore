@@ -39,3 +39,4 @@ database/*
 
 ### User Ignore Rules ###
 *.sql
+.DS_Store

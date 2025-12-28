@@ -208,6 +208,25 @@ public class StudentController {
 		return "redirect:/student/" + studentId + "/courses/" + courseId + "/assignment/" + assignmentId;
 	}
 
+	@GetMapping("/{studentId}/courses/{courseId}/markAsIncomplete/{assignmentId}")
+	public String markAsIncomplete(@PathVariable("studentId") int studentId, @PathVariable("courseId") int courseId,
+			@PathVariable("assignmentId") int assignmentId, Model theModel) {
+		StudentCourseDetails studentCourseDetails = studentCourseDetailsService.findByStudentAndCourseId(studentId,
+				courseId);
+
+		if (studentCourseDetails != null) {
+			AssignmentDetails assignmentDetails = assignmentDetailsService
+					.findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetails.getId());
+
+			if (assignmentDetails != null) {
+				assignmentDetails.setIsDone(0); // assignment is incomplete
+				assignmentDetailsService.save(assignmentDetails);
+			}
+		}
+
+		return "redirect:/student/" + studentId + "/courses/" + courseId + "/assignment/" + assignmentId;
+	}
+
 	// helper method to find day difference between assignment due date and today
 	private int findDayDifference(Assignment assignment) {
 		String dateString = assignment.getDueDate();

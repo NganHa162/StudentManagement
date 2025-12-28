@@ -58,17 +58,88 @@
 		<div th:if="${assignment.daysRemaining < 0}">Overdue</div>
 		<span>Status:</span>
 		<div th:if="${assignmentDetails != null}">
-			<span th:if="${assignmentDetails.isDone == 1}" id="completed">Completed</span>
-			<span th:if="${assignmentDetails.isDone == 0}" id="incomplete">Incomplete</span>
 			<div th:if="${assignmentDetails.isDone == 0}">
-				<a class="button" th:href="@{/student/{studentId}/courses/{courseId}/markAsCompleted/{assignmentId}
-			(studentId=${student.id}, courseId=${course.id}, assignmentId=${assignmentDetails.getAssignmentId()})}"
-					onclick="if (!(confirm('Are you sure you want to mark the asignment as completed?'))) return false">
-					Mark as completed</a>
+				<a class="button"
+					th:data-url="@{/student/{studentId}/courses/{courseId}/markAsCompleted/{assignmentId}(studentId=${student.id}, courseId=${course.id}, assignmentId=${assignmentDetails.getAssignmentId()})}"
+					onclick="openModal('Complete', this.getAttribute('data-url'))">Mark as completed</a>
 			</div>
+
+			<div th:if="${assignmentDetails.isDone == 1}">
+				<span id="completed" style="margin-right: 15px;">Completed</span>
+				<br>
+				<a class="button" style="background-color: #f44336; color: white; width: 180px;"
+					th:data-url="@{/student/{studentId}/courses/{courseId}/markAsIncomplete/{assignmentId}(studentId=${student.id}, courseId=${course.id}, assignmentId=${assignmentDetails.getAssignmentId()})}"
+					onclick="openModal('Unfinished', this.getAttribute('data-url'))">Mark as unfinished</a>
+			</div>
+
+			<!-- The Modal -->
+			<div id="confirmModal" class="modal">
+				<div class="modal-content">
+					<h3 id="modalTitle">Confirm Action</h3>
+					<p id="modalMessage">Are you sure you want to proceed?</p>
+					<div class="modal-buttons">
+						<a id="modalConfirmBtn" class="btn-confirm" href="#">Yes</a>
+						<button class="btn-cancel" onclick="closeModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+
+			<script>
+				var modal = document.getElementById("confirmModal");
+				var modalTitle = document.getElementById("modalTitle");
+				var modalMessage = document.getElementById("modalMessage");
+				var modalConfirmBtn = document.getElementById("modalConfirmBtn");
+
+				function openModal(action, url) {
+					modal.style.display = "block";
+					modalConfirmBtn.href = url;
+
+					if (action === 'Complete') {
+						modalTitle.innerText = "Confirm Completion";
+						modalMessage.innerText = "Are you sure you want to mark this assignment as completed?";
+						modalConfirmBtn.innerText = "Yes, Complete";
+						modalConfirmBtn.style.backgroundColor = "#4CAF50"; // Green
+					} else {
+						modalTitle.innerText = "Confirm Undo";
+						modalMessage.innerText = "Are you sure you want to mark this assignment as unfinished?";
+						modalConfirmBtn.innerText = "Yes, Mark Unfinished";
+						modalConfirmBtn.style.backgroundColor = "#f44336"; // Red
+					}
+				}
+
+				function closeModal() {
+					modal.style.display = "none";
+				}
+
+				window.onclick = function (event) {
+					if (event.target == modal) {
+						modal.style.display = "none";
+					}
+				}
+			</script>
 		</div>
 		<div th:if="${assignmentDetails == null}">
 			<span id="incomplete">Not Started</span>
+		</div>
+
+		<!-- Grade Display Section -->
+		<div th:if="${assignmentGrade != null}"
+			style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+			<h3>Grade Details</h3>
+			<span>Grade:</span>
+			<div style="font-weight: bold; font-size: 1.2em; color: #4CAF50;" th:text="${assignmentGrade.grade}"></div>
+
+			<span>Score:</span>
+			<div><span th:text="${assignmentGrade.score}"></span> / <span th:text="${assignmentGrade.maxScore}"></span>
+			</div>
+
+			<span th:if="${assignmentGrade.feedback != null}">Feedback:</span>
+			<div th:if="${assignmentGrade.feedback != null}" th:text="${assignmentGrade.feedback}"
+				style="font-style: italic; color: #666;"></div>
+		</div>
+		<div th:if="${assignmentGrade == null && assignmentDetails != null && assignmentDetails.isDone == 1}"
+			style="margin-top: 20px; color: #888;">
+			<em>Waiting for grade...</em>
 		</div>
 
 

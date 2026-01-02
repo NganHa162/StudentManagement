@@ -110,12 +110,12 @@ public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements Tea
     public Teacher findById(Integer id) {
         String sql = "SELECT id, username, password, first_name, last_name, email FROM teachers WHERE id = ?";
         Teacher teacher = null;
-        
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     teacher = new Teacher();
@@ -125,14 +125,30 @@ public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements Tea
                     teacher.setFirstName(rs.getString("first_name"));
                     teacher.setLastName(rs.getString("last_name"));
                     teacher.setEmail(rs.getString("email"));
-                    // Note: Courses will need to be loaded separately if needed
+
+                    // Load courses
+                    List<Course> courses = new ArrayList<>();
+                    String courseSql = "SELECT id, code, name FROM courses WHERE teacher_id = ?";
+                    try (PreparedStatement coursePstmt = conn.prepareStatement(courseSql)) {
+                        coursePstmt.setInt(1, teacher.getId());
+                        try (ResultSet courseRs = coursePstmt.executeQuery()) {
+                            while (courseRs.next()) {
+                                Course course = new Course();
+                                course.setId(courseRs.getInt("id"));
+                                course.setCode(courseRs.getString("code"));
+                                course.setName(courseRs.getString("name"));
+                                courses.add(course);
+                            }
+                        }
+                    }
+                    teacher.setCourses(courses);
                 }
             }
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Error finding teacher by id: " + e.getMessage(), e);
         }
-        
+
         return teacher;
     }
 
@@ -154,12 +170,12 @@ public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements Tea
     @Override
     public Optional<Teacher> findByUserName(String userName) {
         String sql = "SELECT id, username, password, first_name, last_name, email FROM teachers WHERE username = ?";
-        
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, userName);
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     Teacher teacher = new Teacher();
@@ -169,14 +185,32 @@ public class TeacherDAOImpl extends BaseDAOImpl<Teacher, Integer> implements Tea
                     teacher.setFirstName(rs.getString("first_name"));
                     teacher.setLastName(rs.getString("last_name"));
                     teacher.setEmail(rs.getString("email"));
+
+                    // Load courses
+                    List<Course> courses = new ArrayList<>();
+                    String courseSql = "SELECT id, code, name FROM courses WHERE teacher_id = ?";
+                    try (PreparedStatement coursePstmt = conn.prepareStatement(courseSql)) {
+                        coursePstmt.setInt(1, teacher.getId());
+                        try (ResultSet courseRs = coursePstmt.executeQuery()) {
+                            while (courseRs.next()) {
+                                Course course = new Course();
+                                course.setId(courseRs.getInt("id"));
+                                course.setCode(courseRs.getString("code"));
+                                course.setName(courseRs.getString("name"));
+                                courses.add(course);
+                            }
+                        }
+                    }
+                    teacher.setCourses(courses);
+
                     return Optional.of(teacher);
                 }
             }
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Error finding teacher by username: " + e.getMessage(), e);
         }
-        
+
         return Optional.empty();
     }
 }

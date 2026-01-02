@@ -57,7 +57,14 @@ public class TeacherController {
 	
 	@GetMapping("/dashboard")
 	public String dashboard(Authentication authentication, Model model) {
-		model.addAttribute("username", authentication.getName());
+		String username = authentication.getName();
+		Teacher teacher = teacherService.findByUserName(username)
+				.orElseThrow(() -> new RuntimeException("Teacher not found"));
+		List<Course> courses = teacher.getCourses();
+
+		model.addAttribute("username", username);
+		model.addAttribute("teacher", teacher);
+		model.addAttribute("courses", courses);
 		return "teacher/dashboard";
 	}
 	

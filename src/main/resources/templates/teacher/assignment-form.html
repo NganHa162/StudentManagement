@@ -5,7 +5,7 @@
 <head>
 	<title>New Assignment</title>
 	
-	<link rel="stylesheet" th:href="@{/css/student/student-navbar.css}">	
+	<link rel="stylesheet" th:href="@{/css/navbar.css}">
 	
 	<link rel="stylesheet" th:href="@{/css/admin/course-form.css}">
 	
@@ -21,7 +21,7 @@
 		<h1>STUDENT MANAGEMENT SYSTEM</h1>		
 		<ul>
 			<li>								
-				<a><i class="fa fa-user-circle"></i><span th:text="${teacher.firstName}"></span></a>
+				<a><i class="fa fa-user-circle"></i><span th:text="${teacher.firstName + ' ' + teacher.lastName}"></span></a>
 				<ul class="dropdown">
 					<li>										
 						<form action="#" th:action="@{/logout}" method="POST">	
@@ -34,8 +34,16 @@
 	</nav>
 	
 	<div class="vertical-navbar">
-		<ul th:each="course : ${courses}">
-			<li><a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}"><i class="fa fa-tag fa-navbar"></i><span th:text="${course.code}"></span></a></li>
+		<ul>
+			<li><a th:href="@{/teacher/dashboard}"><i class="fa fa-home fa-navbar"></i><span>Dashboard</span></a></li>
+			<li><a th:href="@{/teacher/{teacherId}/courses(teacherId=${teacher.id})}"><i class="fa fa-book fa-navbar"></i><span>My Courses</span></a></li>
+		</ul>
+		<ul th:if="${courses != null and courses.size() > 0}">
+			<li th:each="course : ${courses}">
+				<a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}">
+					<i class="fa fa-tag fa-navbar"></i><span th:text="${course.code}"></span>
+				</a>
+			</li>
 		</ul>
 	</div>
 	

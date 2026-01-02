@@ -1,20 +1,88 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="eng" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Teacher Dashboard</title>
+
+    <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/admin-panel.css}">
     <link rel="stylesheet" th:href="@{/css/teacher/dashboard.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-<section>
-    <h1>Welcome, <span th:text="${username}">Teacher</span></h1>
-    <p>You are logged in as TEACHER.</p>
-    <form th:action="@{/logout}" method="post">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <button type="submit">Logout</button>
-    </form>
-</section>
+    <nav>
+        <i class="fa fa-mortar-board"></i>
+        <h1>STUDENT MANAGEMENT SYSTEM</h1>		
+        <ul>
+            <li>								
+                <a><i class="fa fa-user-circle"></i><span th:text="${teacher != null ? (teacher.firstName + ' ' + teacher.lastName) : username}">Teacher</span></a>
+                <ul class="dropdown">
+                    <li>										
+                        <form action="#" th:action="@{/logout}" method="POST">	
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="submit" value="Logout"></input>						
+                        </form>						
+                    </li>
+                </ul>
+            </li>
+        </ul>		
+    </nav>
+    
+    <div class="vertical-navbar">
+        <ul>
+            <li><a th:href="@{/teacher/dashboard}"><i class="fa fa-home fa-navbar"></i><span>Dashboard</span></a></li>
+            <li th:if="${teacher != null}">
+                <a th:href="@{/teacher/{teacherId}/courses(teacherId=${teacher.id})}">
+                    <i class="fa fa-book fa-navbar"></i><span>My Courses</span>
+                </a>
+            </li>
+        </ul>
+        <ul th:if="${courses != null and courses.size() > 0}">
+            <li th:each="course : ${courses}">
+                <a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}">
+                    <i class="fa fa-tag fa-navbar"></i><span th:text="${course.code}"></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="content">
+        <h2>Welcome, <span th:text="${teacher != null ? (teacher.firstName + ' ' + teacher.lastName) : username}">Teacher</span>!</h2>
+        <p>You are logged in as <strong>TEACHER</strong>.</p>
+        
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3 th:text="${courses != null ? courses.size() : 0}">0</h3>
+                <p>Total Courses</p>
+            </div>
+        </div>
+        
+        <div class="dashboard-section">
+            <h3>My Courses</h3>
+            <div th:if="${courses == null or courses.size() == 0}" class="no-courses">
+                <p>You don't have any courses assigned yet.</p>
+                <p>Please contact the administrator to assign courses to you.</p>
+            </div>
+            
+            <div th:if="${courses != null and courses.size() > 0}" class="sections">
+                <div th:each="course : ${courses}">
+                    <div class="section">
+                        <a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}">
+                            <div class="course-name" th:text="${course.name}"></div>
+                            <div class="course-code" th:text="${course.code}"></div>
+                        </a>				
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${courses != null and courses.size() > 0 and teacher != null}" class="action-buttons">
+                <a th:href="@{/teacher/{teacherId}/courses(teacherId=${teacher.id})}" class="btn-view-all">
+                    <i class="fa fa-list"></i> View All Courses
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 

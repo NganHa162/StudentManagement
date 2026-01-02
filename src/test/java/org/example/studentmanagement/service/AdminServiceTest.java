@@ -28,6 +28,8 @@ class AdminServiceTest {
     private AdminDAO adminDAO;
     private StudentDAO studentDAO;
     private TeacherDAO teacherDAO;
+    private StudentService studentService;
+    private TeacherService teacherService;
     private StudentCourseDetailsService studentCourseDetailsService;
     private GradeDetailsService gradeDetailsService;
 
@@ -36,9 +38,11 @@ class AdminServiceTest {
         adminDAO = mock(AdminDAO.class);
         studentDAO = mock(StudentDAO.class);
         teacherDAO = mock(TeacherDAO.class);
+        studentService = mock(StudentService.class);
+        teacherService = mock(TeacherService.class);
         studentCourseDetailsService = mock(StudentCourseDetailsService.class);
         gradeDetailsService = mock(GradeDetailsService.class);
-        adminService = new AdminServiceImpl(adminDAO, studentDAO, teacherDAO, studentCourseDetailsService, gradeDetailsService);
+        adminService = new AdminServiceImpl(adminDAO, studentDAO, teacherDAO, studentService, teacherService, studentCourseDetailsService, gradeDetailsService);
     }
 
     @Test
@@ -138,27 +142,27 @@ class AdminServiceTest {
     void createTeacher_initializesCoursesListWhenNull() {
         // Arrange
         Teacher teacher = new Teacher(0, "prof_smith", "pass123", "John", "Smith", "john@test.com", null);
-        
+
         // Act
         adminService.createTeacher(teacher);
-        
+
         // Assert
         assertNotNull(teacher.getCourses());
-        verify(teacherDAO).save(teacher);
+        verify(teacherService).save(teacher);
     }
     
     @Test
     void createTeacher_savesTeacherWithEmptyCoursesList() {
         // Arrange
         Teacher teacher = new Teacher(0, "prof_jones", "pass456", "Jane", "Jones", "jane@test.com", null);
-        
+
         // Act
         adminService.createTeacher(teacher);
-        
+
         // Assert
         assertNotNull(teacher.getCourses());
         assertTrue(teacher.getCourses().isEmpty());
-        verify(teacherDAO).save(teacher);
+        verify(teacherService).save(teacher);
     }
     
     @Test
@@ -166,17 +170,17 @@ class AdminServiceTest {
         // Arrange
         Teacher existing = new Teacher(1, "prof", "pass", "John", "Doe", "prof@test.com", new ArrayList<>());
         existing.getCourses().add(null); // Add a course
-        
+
         Teacher updated = new Teacher(1, "prof", "pass", "Johnny", "Doe", "prof@test.com", null);
-        
+
         when(teacherDAO.findById(1)).thenReturn(existing);
-        
+
         // Act
         adminService.updateTeacher(updated);
-        
+
         // Assert
         assertEquals(existing.getCourses(), updated.getCourses());
-        verify(teacherDAO).save(updated);
+        verify(teacherService).save(updated);
     }
     
     @Test
@@ -184,14 +188,14 @@ class AdminServiceTest {
         // Arrange
         Teacher existing = new Teacher(1, "prof", "pass", "John", "Doe", "prof@test.com", new ArrayList<>());
         Teacher updated = new Teacher(1, "prof", "pass", "Johnny", "Doe", "prof@test.com", new ArrayList<>());
-        
+
         when(teacherDAO.findById(1)).thenReturn(existing);
-        
+
         // Act
         adminService.updateTeacher(updated);
-        
+
         // Assert
-        verify(teacherDAO).save(updated);
+        verify(teacherService).save(updated);
     }
 }
 

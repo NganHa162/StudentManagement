@@ -173,6 +173,9 @@ public class TeacherController {
 			@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
 			@PathVariable("gradeDetailsId") int gradeDetailsId) throws Exception {
 
+		// Ensure courseId is set from path variable (in case form binding fails)
+		gradeDetails.setCourseId(courseId);
+
 		// Set common fields
 		gradeDetails.setGradedByTeacherId(teacherId);
 		gradeDetails.setGradedDate(java.time.LocalDate.now().toString());
@@ -197,19 +200,42 @@ public class TeacherController {
 		List<Student> students = course.getStudents();
 		List<Course> courses = teacher.getCourses();
 		
+		Assignment assignment = assignmentService.findById(assignmentId);
 		List<Assignment> assignments = new ArrayList<>();
 		List<StudentCourseDetails> studentCourseDetails = new ArrayList<>();
 		List<AssignmentDetails> studentCourseAssignmentDetails = new ArrayList<>();
 		List<String> assignmentStatuses = new ArrayList<>();
+		List<GradeDetails> assignmentGrades = new ArrayList<>();
 		
 		for(Student student : students) {
-			AssignmentDetails studentCourseAssignmentDetail = assignmentDetailsService.
-					findByAssignmentAndStudentCourseDetailsId(assignmentId, studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId).getId());
-			studentCourseAssignmentDetails.add(studentCourseAssignmentDetail);
-			if(studentCourseAssignmentDetail.getIsDone() == 0) {
-				assignmentStatuses.add("incomplete");
+			StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
+			if (scd != null) {
+				AssignmentDetails studentCourseAssignmentDetail = assignmentDetailsService.
+						findByAssignmentAndStudentCourseDetailsId(assignmentId, scd.getId());
+				studentCourseAssignmentDetails.add(studentCourseAssignmentDetail);
+				if(studentCourseAssignmentDetail != null && studentCourseAssignmentDetail.getIsDone() == 0) {
+					assignmentStatuses.add("incomplete");
+				} else if(studentCourseAssignmentDetail != null) {
+					assignmentStatuses.add("completed");
+				} else {
+					assignmentStatuses.add("not assigned");
+				}
+
+				// Load assignment grade for this student
+				GradeDetails gradeForAssignment = null;
+				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
+				if (studentGrades != null && assignment != null) {
+					for (GradeDetails grade : studentGrades) {
+						if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
+							gradeForAssignment = grade;
+							break;
+						}
+					}
+				}
+				assignmentGrades.add(gradeForAssignment);
 			} else {
-				assignmentStatuses.add("completed");
+				assignmentStatuses.add("not enrolled");
+				assignmentGrades.add(null);
 			}
 		}
 				
@@ -221,7 +247,10 @@ public class TeacherController {
 		theModel.addAttribute("students", students);
 		theModel.addAttribute("courses", courses);
 		theModel.addAttribute("teacher", teacher);
-		
+		theModel.addAttribute("course", course);
+		theModel.addAttribute("assignment", assignment);
+		theModel.addAttribute("assignmentGrades", assignmentGrades);
+
 		return "teacher/teacher-assignment-status";
 	}
 	
@@ -231,10 +260,50 @@ public class TeacherController {
 	public String deleteAssignment(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
 			@PathVariable("assignmentId") int assignmentId) {
 		assignmentService.deleteAssignmentById(assignmentId);
-		
+
 		return "redirect:/teacher/" + teacherId + "/courses/" + courseId;
 	}
-	
+
+	@PostMapping("/{teacherId}/courses/{courseId}/assignments/{assignmentId}/gradeStudent/{studentId}")
+	public String gradeAssignmentForStudent(
+			@PathVariable("teacherId") int teacherId,
+			@PathVariable("courseId") int courseId,
+			@PathVariable("assignmentId") int assignmentId,
+			@PathVariable("studentId") int studentId,
+			@ModelAttribute GradeDetails gradeDetails) {
+
+		Assignment assignment = assignmentService.findById(assignmentId);
+
+		// Check if grade already exists for this student/assignment combination
+		List<GradeDetails> existingGrades = gradeDetailsService.findByStudentIdAndCourseId(studentId, courseId);
+		GradeDetails existingGrade = null;
+		if (existingGrades != null && assignment != null) {
+			for (GradeDetails grade : existingGrades) {
+				if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
+					existingGrade = grade;
+					break;
+				}
+			}
+		}
+
+		// Set all required fields
+		if (existingGrade != null) {
+			gradeDetails.setId(existingGrade.getId());
+		}
+		gradeDetails.setStudentId(studentId);
+		gradeDetails.setCourseId(courseId);
+		if (assignment != null) {
+			gradeDetails.setAssignmentName(assignment.getTitle());
+		}
+		gradeDetails.setGradedByTeacherId(teacherId);
+		gradeDetails.setGradedDate(java.time.LocalDate.now().toString());
+
+		// Save the grade
+		gradeDetailsService.save(gradeDetails);
+
+		return "redirect:/teacher/" + teacherId + "/courses/" + courseId + "/assignments/" + assignmentId;
+	}
+
 	@GetMapping("/{teacherId}/courses/{courseId}/addNewAssignment")
 	public String addNewAssignment(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
 		Assignment assignment = new Assignment();

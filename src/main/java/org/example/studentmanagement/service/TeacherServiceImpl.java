@@ -36,13 +36,12 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void save(Teacher teacher) {
-        // Nếu mật khẩu chưa mã hóa (không bắt đầu bằng {bcrypt} hoặc không ở dạng BCrypt)
-        // thì mã hóa trước khi lưu để đảm bảo Spring Security so khớp đúng.
         String rawPassword = teacher.getPassword();
         if (rawPassword != null && !rawPassword.isBlank()) {
-            // Bạn có thể thêm check để tránh double-encode nếu cần thiết,
-            // ví dụ kiểm tra prefix hoặc độ dài chuỗi.
-            teacher.setPassword(passwordEncoder.encode(rawPassword));
+            // Only encode if not already encoded (BCrypt passwords start with $2a$, $2b$, or $2y$)
+            if (!rawPassword.startsWith("$2a$") && !rawPassword.startsWith("$2b$") && !rawPassword.startsWith("$2y$")) {
+                teacher.setPassword(passwordEncoder.encode(rawPassword));
+            }
         }
         teacherDAO.save(teacher);
     }

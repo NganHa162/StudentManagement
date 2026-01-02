@@ -50,7 +50,8 @@ public class AdminDAOImpl extends BaseDAOImpl<Admin, Integer> implements AdminDA
     @Override
     public Optional<Admin> findByUserName(String userName) {
         return admins.stream()
-                .filter(admin -> admin.getUserName().equalsIgnoreCase(userName))
+                .filter(admin -> admin.getUserName().equalsIgnoreCase(userName)
+                        || admin.getEmail().equalsIgnoreCase(userName))
                 .findFirst();
     }
 }

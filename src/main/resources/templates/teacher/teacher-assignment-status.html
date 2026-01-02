@@ -51,9 +51,9 @@
 	
 	
 	<div class="content">
-	
-	<h3>Assignment Status List</h3>
-	
+
+	<h3 th:text="${assignment != null ? assignment.title + ' - Student Status and Grades' : 'Assignment Status List'}"></h3>
+
 	<table class="table">
 		<tr th:each="element : ${list}" >
 			<td class="no-padding">
@@ -62,9 +62,9 @@
 						<tr>
 							<th id="table-top-left">Student Name</th>
 							<th>Email</th>
-						</tr>	
+						</tr>
 					</thead>
-					
+
 					<tbody>
 						<tr th:each="student : ${element.key}">
 							<td th:text="${student.firstName + ' ' + student.lastName}"></td>
@@ -73,25 +73,50 @@
 					</tbody>
 				</table>
 			</td>
-			
+
 			<td class="no-padding">
 				<table id="inner-table-two">
 					<thead>
 						<tr>
-							<th id="table-top-right">Status</th>
+							<th>Status</th>
+							<th>Score</th>
+							<th>Max Score</th>
+							<th>Grade</th>
+							<th id="table-top-right">Action</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="isDone : ${element.value}">
-							<td th:text="${isDone}"></td>
+						<tr th:each="student, iterStat : ${element.key}">
+							<form th:action="@{/teacher/{teacherId}/courses/{courseId}/assignments/{assignmentId}/gradeStudent/{studentId}
+								(teacherId=${teacher.id}, courseId=${course.id}, assignmentId=${assignment.id}, studentId=${student.id})}" method="POST">
+								<td th:text="${element.value[iterStat.index]}"></td>
+								<td>
+									<input type="number" step="0.01" th:name="score"
+										th:value="${assignmentGrades != null && iterStat.index < assignmentGrades.size() && assignmentGrades[iterStat.index] != null ? assignmentGrades[iterStat.index].score : 0}"
+										style="width: 80px;"/>
+								</td>
+								<td>
+									<input type="number" step="0.01" th:name="maxScore"
+										th:value="${assignmentGrades != null && iterStat.index < assignmentGrades.size() && assignmentGrades[iterStat.index] != null ? assignmentGrades[iterStat.index].maxScore : 100}"
+										style="width: 80px;"/>
+								</td>
+								<td>
+									<input type="text" th:name="grade"
+										th:value="${assignmentGrades != null && iterStat.index < assignmentGrades.size() && assignmentGrades[iterStat.index] != null ? assignmentGrades[iterStat.index].grade : ''}"
+										placeholder="A, B, C..." style="width: 60px;"/>
+								</td>
+								<td>
+									<button class="submit-button" type="submit">Save Grade</button>
+								</td>
+							</form>
 						</tr>
 					</tbody>
 				</table>
 			</td>
-		
+
 		</tr>
 	</table>
-	
+
 	</div>
 </body>
 

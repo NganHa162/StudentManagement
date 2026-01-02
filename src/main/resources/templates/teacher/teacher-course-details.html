@@ -142,19 +142,16 @@
 				<table>
 					<thead>
 						<tr>
-							<th>Grade 1</th>
-							<th>Grade 2</th>
-							<th id="table-top-right">Grade 3</th>
+							<th>Score</th>
+							<th>Max Score</th>
+							<th id="table-top-right">Grade</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="gradeDetails : ${element.value}">  
-							<td th:if="${gradeDetails.getGradeOne() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeOne() != -1}" th:text="${gradeDetails.gradeOne}"></td>					
-							<td th:if="${gradeDetails.getGradeTwo() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeTwo() != -1}" th:text="${gradeDetails.gradeTwo}"></td>
-							<td th:if="${gradeDetails.getGradeThree() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeThree() != -1}" th:text="${gradeDetails.gradeThree}"></td>							
+						<tr th:each="gradeDetails : ${element.value}">
+							<td th:text="${gradeDetails.score != null ? gradeDetails.score : '-'}"></td>
+							<td th:text="${gradeDetails.maxScore != null ? gradeDetails.maxScore : '-'}"></td>
+							<td th:text="${gradeDetails.grade != null and gradeDetails.grade != '' ? gradeDetails.grade : '-'}"></td>
 						</tr>
 					</tbody>
 				</table>

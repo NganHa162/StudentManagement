@@ -8,9 +8,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<link rel="stylesheet" th:href="@{/css/navbar.css}">
-	
-	<link rel="stylesheet" th:href="@{/css/admin/admin-panel.css}">
-	
+
+	<link rel="stylesheet" th:href="@{/css/teacher/teacher-courses.css}">
+
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
@@ -54,10 +54,13 @@
 	<div th:if="${courses == null or courses.size() == 0}">There are no courses assigned to you.</div>
 	
 	<div class="sections">
-		<div th:each="course : ${courses}">
-			<div class="section">
-				<a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}"><div class="course-name" th:text="${course.name}"></div></a>				
-			</div>
+		<div class="section" th:each="course : ${courses}">
+			<a th:href="@{/teacher/{teacherId}/courses/{courseId}(teacherId=${teacher.id}, courseId=${course.id})}">
+				<div class="course-info">
+					<div class="course-name" th:text="${course.name}">Course Name</div>
+					<div class="course-code" th:text="${course.code}">COURSE-CODE</div>
+				</div>
+			</a>
 		</div>
 	</div>
 	

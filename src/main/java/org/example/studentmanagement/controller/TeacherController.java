@@ -84,32 +84,47 @@ public class TeacherController {
 		Course course = courseService.findCourseById(courseId);
 		List<Course> courses = teacher.getCourses();
 		List<Student> students = course.getStudents();
-		
-		if(students.size() != 0) {
-			List<Assignment> assignments = studentCourseDetailsService.findByStudentAndCourseId(students.get(0).getId(), courseId).getAssignments();
+
+		// Load assignments directly from the course, not from StudentCourseDetails
+		List<Assignment> assignments = assignmentService.findByCourseId(courseId);
+		if(assignments != null && assignments.size() > 0) {
 			for(Assignment assignment : assignments) {
-				// int daysRemaining = findDayDifference(assignment);
-				// assignment.setDaysRemaining(daysRemaining);
-				assignmentService.save(assignment);
+				int daysRemaining = findDayDifference(assignment);
+				assignment.setDaysRemaining(daysRemaining);
 			}
-			if(assignments.size() == 0) {
-				assignments = null;
-			}
+		} else {
+			assignments = null;
+		}
+
+		if(students != null && students.size() != 0) {
 			List<GradeDetails> gradeDetailsList = new ArrayList<>();
 			for(Student student : students) {
-				gradeDetailsList.add(studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId).getGradeDetails());
+				// Load grade details directly from grade_details table
+				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
+				if(studentGrades != null && studentGrades.size() > 0) {
+					// Add the first grade record (assuming one grade per student per course)
+					gradeDetailsList.add(studentGrades.get(0));
+				} else {
+					// Add empty grade details for students without grades
+					GradeDetails emptyGrade = new GradeDetails();
+					emptyGrade.setStudentId(student.getId());
+					emptyGrade.setCourseId(courseId);
+					emptyGrade.setScore(0.0);
+					emptyGrade.setMaxScore(100.0);
+					gradeDetailsList.add(emptyGrade);
+				}
 			}
 			HashMap<List<Student>, List<GradeDetails>> studentGradeList = new HashMap<>();
 			studentGradeList.put(students, gradeDetailsList);
 			theModel.addAttribute("studentGradeList", studentGradeList);
-			theModel.addAttribute("assignments", assignments);		
-		} 
-		
+		}
+
+		theModel.addAttribute("assignments", assignments);
 		theModel.addAttribute("teacher", teacher);
 		theModel.addAttribute("course", course);
 		theModel.addAttribute("courses", courses);
 		theModel.addAttribute("students", students);
-		
+
 		return "teacher/teacher-course-details";
 	}
 	
@@ -120,38 +135,56 @@ public class TeacherController {
 		Course course = courseService.findCourseById(courseId);
 		List<Course> courses = teacher.getCourses();
 		List<Student> students = course.getStudents();
-		
+
 		List<GradeDetails> gradeDetailsList = new ArrayList<>();
 		for(Student student : students) {
-			gradeDetailsList.add(studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId).getGradeDetails());
+			// Load grade details directly from grade_details table
+			List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
+			if(studentGrades != null && studentGrades.size() > 0) {
+				// Add the first grade record (assuming one grade per student per course)
+				gradeDetailsList.add(studentGrades.get(0));
+			} else {
+				// Create a default empty GradeDetails for students without grades
+				GradeDetails emptyGrade = new GradeDetails();
+				emptyGrade.setStudentId(student.getId());
+				emptyGrade.setCourseId(courseId);
+				emptyGrade.setScore(0.0);
+				emptyGrade.setMaxScore(100.0);
+				gradeDetailsList.add(emptyGrade);
+			}
 		}
-		
+
 		HashMap<List<Student>, List<GradeDetails>> studentGradeList = new HashMap<>();
 		studentGradeList.put(students, gradeDetailsList);
-		
+
 		theModel.addAttribute("studentGradeList", studentGradeList);
 		theModel.addAttribute("course", course);
 		theModel.addAttribute("courses", courses);
 		theModel.addAttribute("teacher", teacher);
 		theModel.addAttribute("students", students);
 		theModel.addAttribute("gradeDetailsList", gradeDetailsList);
-		
+
 		return "teacher/edit-grades-form";
 	}
 	
 	
 	@PostMapping("/{teacherId}/courses/{courseId}/editGrades/save/{gradeDetailsId}")
-	public String modifyGrades(@ModelAttribute GradeDetails gradeDetails, 
+	public String modifyGrades(@ModelAttribute GradeDetails gradeDetails,
 			@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
 			@PathVariable("gradeDetailsId") int gradeDetailsId) throws Exception {
-		
-		Teacher teacher = teacherService.findByTeacherId(teacherId);
-		Course course = courseService.findCourseById(courseId);
-		StudentCourseDetails studentCourseDetails = gradeDetailsService.findById(gradeDetailsId).getStudentCourseDetails();
-		studentCourseDetails.setGradeDetails(gradeDetails);
-		studentCourseDetailsService.save(studentCourseDetails);
-		gradeDetailsService.deleteById(gradeDetailsId);
-		
+
+		// Set common fields
+		gradeDetails.setGradedByTeacherId(teacherId);
+		gradeDetails.setGradedDate(java.time.LocalDate.now().toString());
+
+		if (gradeDetailsId != 0) {
+			// Update existing grade - set the ID and save
+			gradeDetails.setId(gradeDetailsId);
+		}
+
+		// Save the grade (will insert if ID is 0, update if ID exists)
+		gradeDetailsService.save(gradeDetails);
+
 	    return "redirect:/teacher/" + teacherId + "/courses/" + courseId;
 	}
 	
@@ -217,19 +250,27 @@ public class TeacherController {
 	}
 	
 	@PostMapping("/{teacherId}/courses/{courseId}/addNewAssignment/save")
-	public String saveAssignment(@Valid @ModelAttribute("assignment") Assignment assignment, BindingResult theBindingResult, 
+	public String saveAssignment(@Valid @ModelAttribute("assignment") Assignment assignment, BindingResult theBindingResult,
 			@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
-		
+
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		List<Course> courses = teacher.getCourses();
-		
+
 		if (theBindingResult.hasErrors()) {
 			theModel.addAttribute("teacher", teacher);
 			theModel.addAttribute("courses", courses);
 			theModel.addAttribute("course", courseService.findCourseById(courseId));
 			return "teacher/assignment-form";
 		}
-		
+
+		// Set required fields before saving
+		assignment.setCourseId(courseId);
+		assignment.setCreatedByTeacherId(teacherId);
+		assignment.setCreatedDate(java.time.LocalDate.now().toString());
+		if (assignment.getStatus() == null || assignment.getStatus().isEmpty()) {
+			assignment.setStatus("active");
+		}
+
 		// assignment.setDaysRemaining(findDayDifference(assignment));
 		assignmentService.save(assignment);
 		
@@ -260,14 +301,14 @@ public class TeacherController {
 		try {
 			LocalDate dueDate = LocalDate.parse(dateString, dtf);
 			LocalDate today = LocalDate.now();
-			int dayDiff = (int) Duration.between(today.atStartOfDay(), dueDate.atStartOfDay()).toDays();
-			
-			return dayDiff;	
-			
+			long dayDiff = java.time.temporal.ChronoUnit.DAYS.between(today, dueDate);
+
+			return (int) dayDiff;
+
 		} catch (Exception e) {
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
-		
+
 		return -1;
 	}
 	

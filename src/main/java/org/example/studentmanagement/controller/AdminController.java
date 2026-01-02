@@ -295,17 +295,21 @@ public class AdminController {
 	
 	
 	@GetMapping("/courses/delete")
-	public String deleteCourse(@RequestParam("courseId") int courseId) {		
+	public String deleteCourse(@RequestParam("courseId") int courseId) {
 		Course course = courseService.findCourseById(courseId);
 		List<Student> students = course.getStudents();
-		
+
 		for(Student student : students) {
-			StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
-			int gradeId = scd.getGradeDetails().getId();
+			// Delete student course details
 			studentCourseDetailsService.deleteByStudentAndCourseId(student.getId(), courseId);
-			gradeDetailsService.deleteById(gradeId);
+
+			// Delete all grade details for this student and course
+			List<GradeDetails> gradeDetailsList = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
+			for (GradeDetails gd : gradeDetailsList) {
+				gradeDetailsService.deleteById(gd.getId());
+			}
 		}
-		
+
 		courseService.deleteCourseById(courseId);
 		return "redirect:/admin/courses";
 	}

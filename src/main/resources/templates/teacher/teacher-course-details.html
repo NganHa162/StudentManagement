@@ -142,19 +142,16 @@
 				<table>
 					<thead>
 						<tr>
-							<th>Grade 1</th>
-							<th>Grade 2</th>
-							<th id="table-top-right">Grade 3</th>
+							<th>Score</th>
+							<th>Max Score</th>
+							<th id="table-top-right">Grade</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr th:each="gradeDetails : ${element.value}">  
-							<td th:if="${gradeDetails.getGradeOne() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeOne() != -1}" th:text="${gradeDetails.gradeOne}"></td>					
-							<td th:if="${gradeDetails.getGradeTwo() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeTwo() != -1}" th:text="${gradeDetails.gradeTwo}"></td>
-							<td th:if="${gradeDetails.getGradeThree() == -1}">-</td>
-							<td th:if="${gradeDetails.getGradeThree() != -1}" th:text="${gradeDetails.gradeThree}"></td>							
+						<tr th:each="gradeDetails : ${element.value}">
+							<td th:text="${gradeDetails.score != null ? gradeDetails.score : '-'}"></td>
+							<td th:text="${gradeDetails.maxScore != null ? gradeDetails.maxScore : '-'}"></td>
+							<td th:text="${gradeDetails.grade != null and gradeDetails.grade != '' ? gradeDetails.grade : '-'}"></td>
 						</tr>
 					</tbody>
 				</table>
@@ -163,7 +160,8 @@
 		</tr>	  
 	</table>
 	
-	<a class="button edit-button" th:href="@{/teacher/{teacherId}/courses/{courseId}/editGrades(teacherId=${teacher.id}, courseId=${course.id})}">Edit Grades</a>
+	<a class="button edit-button" style="min-width: 300px; width: auto; padding: 10px 30px;" th:href="@{/teacher/{teacherId}/courses/{courseId}/editGrades(teacherId=${teacher.id}, courseId=${course.id})}">Edit Course Final Grades</a>
+	<p style="margin-top: 10px; color: #666; font-size: 0.9em;">Note: To grade individual assignments, click "View" on the assignment below.</p>
 	
 	</div>
 	

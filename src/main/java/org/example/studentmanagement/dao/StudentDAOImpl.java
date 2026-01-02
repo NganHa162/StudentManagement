@@ -163,12 +163,13 @@ public class StudentDAOImpl extends BaseDAOImpl<Student, Integer> implements Stu
 
     @Override
     public Optional<Student> findByUserName(String userName) {
-        String sql = "SELECT id, username, password, first_name, last_name, email FROM students WHERE username = ?";
-        
+        String sql = "SELECT id, username, password, first_name, last_name, email FROM students WHERE username = ? OR email = ?";
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, userName);
+            pstmt.setString(2, userName);
             
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {

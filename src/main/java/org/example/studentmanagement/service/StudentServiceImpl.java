@@ -52,7 +52,10 @@ public class StudentServiceImpl implements StudentService {
     public void save(Student student) {
         String rawPassword = student.getPassword();
         if (rawPassword != null && !rawPassword.isBlank()) {
-            student.setPassword(passwordEncoder.encode(rawPassword));
+            // Only encode if not already encoded (BCrypt passwords start with $2a$, $2b$, or $2y$)
+            if (!rawPassword.startsWith("$2a$") && !rawPassword.startsWith("$2b$") && !rawPassword.startsWith("$2y$")) {
+                student.setPassword(passwordEncoder.encode(rawPassword));
+            }
         }
         studentDAO.save(student);
     }

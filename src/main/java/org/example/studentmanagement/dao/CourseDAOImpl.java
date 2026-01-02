@@ -69,17 +69,17 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
     public List<Course> findAll(){
         List<Course> courses = new ArrayList<>();
         String sql = "SELECT c.id, c.code, c.name, c.teacher_id, t.first_name AS firstName, t.last_name AS lastName FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id";
-        
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-            
+
             while (rs.next()) {
                 Course course = new Course();
                 course.setId(rs.getInt("id"));
                 course.setCode(rs.getString("code"));
                 course.setName(rs.getString("name"));
-                
+
                 // Set teacher if exists
                 int teacherId = rs.getInt("teacher_id");
                 if (!rs.wasNull()) {
@@ -89,7 +89,7 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                     teacher.setLastName(rs.getString("lastName"));
                     course.setTeacher(teacher);
                 }
-                
+
                 // Load students
                 List<Student> students = new ArrayList<>();
                 String studentSql = "SELECT s.id, s.first_name, s.last_name FROM students s JOIN student_course_details scd ON s.id = scd.student_id WHERE scd.course_id = ?";
@@ -106,14 +106,14 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                     }
                 }
                 course.setStudents(students);
-                
+
                 courses.add(course);
             }
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Error finding all courses: " + e.getMessage(), e);
         }
-        
+
         return courses;
     }
 
@@ -121,19 +121,19 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
     public Course findById(Integer id){
         String sql = "SELECT c.id, c.code, c.name, c.teacher_id, t.first_name AS firstName, t.last_name AS lastName FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id WHERE c.id = ?";
         Course course = null;
-        
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
-            
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     course = new Course();
                     course.setId(rs.getInt("id"));
                     course.setCode(rs.getString("code"));
                     course.setName(rs.getString("name"));
-                    
+
                     // Set teacher if exists
                     int teacherId = rs.getInt("teacher_id");
                     if (!rs.wasNull()) {
@@ -143,7 +143,7 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                         teacher.setLastName(rs.getString("lastName"));
                         course.setTeacher(teacher);
                     }
-                    
+
                     // Load students
                     List<Student> students = new ArrayList<>();
                     String studentSql = "SELECT s.id, s.first_name, s.last_name FROM students s JOIN student_course_details scd ON s.id = scd.student_id WHERE scd.course_id = ?";
@@ -162,24 +162,24 @@ public class CourseDAOImpl extends BaseDAOImpl<Course, Integer> implements Cours
                     course.setStudents(students);
                 }
             }
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Error finding course by id: " + e.getMessage(), e);
         }
-        
+
         return course;
     }
 
     @Override
     public void deleteById(Integer id){
         String sql = "DELETE FROM courses WHERE id = ?";
-        
+
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
-            
+
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting course by id: " + e.getMessage(), e);
         }

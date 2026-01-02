@@ -23,18 +23,24 @@ public class AdminServiceImpl implements AdminService {
     private final AdminDAO adminDAO;
     private final StudentDAO studentDAO;
     private final TeacherDAO teacherDAO;
+    private final StudentService studentService;
+    private final TeacherService teacherService;
     private final StudentCourseDetailsService studentCourseDetailsService;
     private final GradeDetailsService gradeDetailsService;
 
     @Autowired
-    public AdminServiceImpl(AdminDAO adminDAO, 
+    public AdminServiceImpl(AdminDAO adminDAO,
                            StudentDAO studentDAO,
                            TeacherDAO teacherDAO,
+                           StudentService studentService,
+                           TeacherService teacherService,
                            StudentCourseDetailsService studentCourseDetailsService,
                            GradeDetailsService gradeDetailsService) {
         this.adminDAO = adminDAO;
         this.studentDAO = studentDAO;
         this.teacherDAO = teacherDAO;
+        this.studentService = studentService;
+        this.teacherService = teacherService;
         this.studentCourseDetailsService = studentCourseDetailsService;
         this.gradeDetailsService = gradeDetailsService;
     }
@@ -62,8 +68,9 @@ public class AdminServiceImpl implements AdminService {
         if (student.getCourses() == null) {
             student.setCourses(new ArrayList<>());
         }
-        
-        studentDAO.save(student);
+
+        // Use StudentService.save() which handles password encoding
+        studentService.save(student);
     }
 
     @Override
@@ -76,21 +83,27 @@ public class AdminServiceImpl implements AdminService {
                 student.setCourses(existing.getCourses());
             }
         }
-        
-        studentDAO.save(student);
+
+        // Use StudentService.save() which handles password encoding
+        studentService.save(student);
     }
 
     @Override
     public void deleteStudentWithRelatedData(int studentId) {
-        // Delete all related data before deleting student
+        // Delete all grade details for this student
         List<StudentCourseDetails> enrollments = studentCourseDetailsService.findByStudentId(studentId);
-        
         for(StudentCourseDetails scd : enrollments) {
-            int gradeId = scd.getGradeDetails().getId();
-            studentCourseDetailsService.deleteByStudentId(studentId);
-            gradeDetailsService.deleteById(gradeId);
+            // Find and delete all grades for this student and course
+            List<org.example.studentmanagement.entity.GradeDetails> grades =
+                gradeDetailsService.findByStudentIdAndCourseId(studentId, scd.getCourseId());
+            for(org.example.studentmanagement.entity.GradeDetails grade : grades) {
+                gradeDetailsService.deleteById(grade.getId());
+            }
         }
-        
+
+        // Delete all student course enrollments
+        studentCourseDetailsService.deleteByStudentId(studentId);
+
         // Finally delete the student
         studentDAO.deleteById(studentId);
     }
@@ -103,8 +116,9 @@ public class AdminServiceImpl implements AdminService {
         if (teacher.getCourses() == null) {
             teacher.setCourses(new ArrayList<>());
         }
-        
-        teacherDAO.save(teacher);
+
+        // Use TeacherService.save() which handles password encoding
+        teacherService.save(teacher);
     }
 
     @Override
@@ -117,8 +131,9 @@ public class AdminServiceImpl implements AdminService {
                 teacher.setCourses(existing.getCourses());
             }
         }
-        
-        teacherDAO.save(teacher);
+
+        // Use TeacherService.save() which handles password encoding
+        teacherService.save(teacher);
     }
 }
 

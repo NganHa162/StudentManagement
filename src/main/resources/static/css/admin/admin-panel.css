@@ -3,11 +3,10 @@
 /* ======================================= */
 h3 {
     text-align: center;
-    font-size: 30px; /* Tăng kích thước H3 */
+    font-size: 32px; /* Tăng kích thước H3 */
     margin-bottom: 30px; /* Thêm khoảng cách */
     color: #333;
-    font-weight: 300;
-	padding-top: 30px;
+    font-weight: 600;
 }
 
 .content {

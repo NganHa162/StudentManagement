@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS admins CASCADE;
 -- 1. Admin Table
 CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
-    user_name VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE admins (
 -- 2. Student Table
 CREATE TABLE students (
     id SERIAL PRIMARY KEY,
-    user_name VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE students (
 -- 3. Teacher Table
 CREATE TABLE teachers (
     id SERIAL PRIMARY KEY,
-    user_name VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
@@ -108,19 +108,19 @@ CREATE INDEX idx_grade_course ON grade_details(course_id);
 
 -- Sample Admin Account
 -- Login with: admin@example.com / admin123 OR admin / admin123
-INSERT INTO admins (user_name, password, first_name, last_name, email)
+INSERT INTO admins (username, password, first_name, last_name, email)
 VALUES ('admin', 'admin123', 'Admin', 'User', 'admin@example.com');
 
 -- Sample Students
 -- Login with email (student1@example.com / student123) OR username (student11 / student123)
-INSERT INTO students (user_name, password, first_name, last_name, email) VALUES
+INSERT INTO students (username, password, first_name, last_name, email) VALUES
 ('student11', 'student123', 'Nguyen', 'Van A', 'student1@example.com'),
 ('student21', 'student123', 'Tran', 'Thi B', 'student2@example.com'),
 ('student31', 'student123', 'Le', 'Van C', 'student3@example.com');
 
 -- Sample Teachers
 -- Login with email (teacher1@example.com / teacher123) OR username (teacher11 / teacher123)
-INSERT INTO teachers (user_name, password, first_name, last_name, email) VALUES
+INSERT INTO teachers (username, password, first_name, last_name, email) VALUES
 ('teacher11', 'teacher123', 'Pham', 'Thi D', 'teacher1@example.com'),
 ('teacher21', 'teacher123', 'Hoang', 'Van E', 'teacher2@example.com');
 

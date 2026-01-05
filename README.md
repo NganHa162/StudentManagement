@@ -44,19 +44,6 @@ cd StudentManagement
 
 ### 2. Set Up PostgreSQL Database
 
-#### Option A: Using Docker (Recommended)
-
-```bash
-# Start PostgreSQL container
-docker-compose up -d
-
-# Verify container is running
-docker-compose ps
-
-# View logs if needed
-docker-compose logs -f postgres
-```
-
 #### Option B: Manual PostgreSQL Installation
 
 1. Install PostgreSQL 15+ on your system
@@ -72,8 +59,6 @@ createdb -U postgres studentdb
 Run the initialization script to create tables and insert sample data:
 
 ```bash
-# Using Docker
-docker exec -i studentmanagement-postgres psql -U postgres -d studentdb < init.sql
 
 # OR using local PostgreSQL
 psql -h localhost -p 5433 -U postgres -d studentdb -f init.sql

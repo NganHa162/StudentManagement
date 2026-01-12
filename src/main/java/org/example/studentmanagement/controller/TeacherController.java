@@ -36,25 +36,25 @@ import org.example.studentmanagement.service.TeacherService;
 @Controller
 @RequestMapping("/teacher")
 public class TeacherController {
-	
+
 	@Autowired
 	private CourseService courseService;
-	
+
 	@Autowired
 	private TeacherService teacherService;
-	
+
 	@Autowired
 	private StudentCourseDetailsService studentCourseDetailsService;
-	
+
 	@Autowired
 	private AssignmentDetailsService assignmentDetailsService;
-	
+
 	@Autowired
 	private AssignmentService assignmentService;
-	
+
 	@Autowired
 	private GradeDetailsService gradeDetailsService;
-	
+
 	@GetMapping("/dashboard")
 	public String dashboard(Authentication authentication, Model model) {
 		String username = authentication.getName();
@@ -67,19 +67,20 @@ public class TeacherController {
 		model.addAttribute("courses", courses);
 		return "teacher/dashboard";
 	}
-	
+
 	@GetMapping("/{teacherId}/courses")
 	public String showTeacherCourses(@PathVariable("teacherId") int teacherId, Model theModel) {
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		List<Course> courses = teacher.getCourses();
-		
+
 		theModel.addAttribute("teacher", teacher);
 		theModel.addAttribute("courses", courses);
 		return "teacher/teacher-courses";
 	}
-	
+
 	@GetMapping("/{teacherId}/courses/{courseId}")
-	public String showTeacherCourseDetails(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
+	public String showTeacherCourseDetails(@PathVariable("teacherId") int teacherId,
+			@PathVariable("courseId") int courseId, Model theModel) {
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		Course course = courseService.findCourseById(courseId);
 		List<Course> courses = teacher.getCourses();
@@ -87,8 +88,8 @@ public class TeacherController {
 
 		// Load assignments directly from the course, not from StudentCourseDetails
 		List<Assignment> assignments = assignmentService.findByCourseId(courseId);
-		if(assignments != null && assignments.size() > 0) {
-			for(Assignment assignment : assignments) {
+		if (assignments != null && assignments.size() > 0) {
+			for (Assignment assignment : assignments) {
 				int daysRemaining = findDayDifference(assignment);
 				assignment.setDaysRemaining(daysRemaining);
 			}
@@ -96,12 +97,13 @@ public class TeacherController {
 			assignments = null;
 		}
 
-		if(students != null && students.size() != 0) {
+		if (students != null && students.size() != 0) {
 			List<GradeDetails> gradeDetailsList = new ArrayList<>();
-			for(Student student : students) {
+			for (Student student : students) {
 				// Load grade details directly from grade_details table
-				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
-				if(studentGrades != null && studentGrades.size() > 0) {
+				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(),
+						courseId);
+				if (studentGrades != null && studentGrades.size() > 0) {
 					// Add the first grade record (assuming one grade per student per course)
 					gradeDetailsList.add(studentGrades.get(0));
 				} else {
@@ -127,20 +129,21 @@ public class TeacherController {
 
 		return "teacher/teacher-course-details";
 	}
-	
-	
+
 	@GetMapping("/{teacherId}/courses/{courseId}/editGrades")
-	public String editGradesForm(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
+	public String editGradesForm(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
+			Model theModel) {
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		Course course = courseService.findCourseById(courseId);
 		List<Course> courses = teacher.getCourses();
 		List<Student> students = course.getStudents();
 
 		List<GradeDetails> gradeDetailsList = new ArrayList<>();
-		for(Student student : students) {
+		for (Student student : students) {
 			// Load grade details directly from grade_details table
-			List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
-			if(studentGrades != null && studentGrades.size() > 0) {
+			List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(),
+					courseId);
+			if (studentGrades != null && studentGrades.size() > 0) {
 				// Add the first grade record (assuming one grade per student per course)
 				gradeDetailsList.add(studentGrades.get(0));
 			} else {
@@ -166,8 +169,7 @@ public class TeacherController {
 
 		return "teacher/edit-grades-form";
 	}
-	
-	
+
 	@PostMapping("/{teacherId}/courses/{courseId}/editGrades/save/{gradeDetailsId}")
 	public String modifyGrades(@ModelAttribute GradeDetails gradeDetails,
 			@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
@@ -188,34 +190,34 @@ public class TeacherController {
 		// Save the grade (will insert if ID is 0, update if ID exists)
 		gradeDetailsService.save(gradeDetails);
 
-	    return "redirect:/teacher/" + teacherId + "/courses/" + courseId;
+		return "redirect:/teacher/" + teacherId + "/courses/" + courseId;
 	}
-	
-	
+
 	@GetMapping("/{teacherId}/courses/{courseId}/assignments/{assignmentId}")
-	public String showAssignmentDetails(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
+	public String showAssignmentDetails(@PathVariable("teacherId") int teacherId,
+			@PathVariable("courseId") int courseId,
 			@PathVariable("assignmentId") int assignmentId, Model theModel) {
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		Course course = courseService.findCourseById(courseId);
 		List<Student> students = course.getStudents();
 		List<Course> courses = teacher.getCourses();
-		
+
 		Assignment assignment = assignmentService.findById(assignmentId);
 		List<Assignment> assignments = new ArrayList<>();
 		List<StudentCourseDetails> studentCourseDetails = new ArrayList<>();
 		List<AssignmentDetails> studentCourseAssignmentDetails = new ArrayList<>();
 		List<String> assignmentStatuses = new ArrayList<>();
 		List<GradeDetails> assignmentGrades = new ArrayList<>();
-		
-		for(Student student : students) {
+
+		for (Student student : students) {
 			StudentCourseDetails scd = studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
 			if (scd != null) {
-				AssignmentDetails studentCourseAssignmentDetail = assignmentDetailsService.
-						findByAssignmentAndStudentCourseDetailsId(assignmentId, scd.getId());
+				AssignmentDetails studentCourseAssignmentDetail = assignmentDetailsService
+						.findByAssignmentAndStudentCourseDetailsId(assignmentId, scd.getId());
 				studentCourseAssignmentDetails.add(studentCourseAssignmentDetail);
-				if(studentCourseAssignmentDetail != null && studentCourseAssignmentDetail.getIsDone() == 0) {
+				if (studentCourseAssignmentDetail != null && studentCourseAssignmentDetail.getIsDone() == 0) {
 					assignmentStatuses.add("incomplete");
-				} else if(studentCourseAssignmentDetail != null) {
+				} else if (studentCourseAssignmentDetail != null) {
 					assignmentStatuses.add("completed");
 				} else {
 					assignmentStatuses.add("not assigned");
@@ -223,10 +225,12 @@ public class TeacherController {
 
 				// Load assignment grade for this student
 				GradeDetails gradeForAssignment = null;
-				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(), courseId);
+				List<GradeDetails> studentGrades = gradeDetailsService.findByStudentIdAndCourseId(student.getId(),
+						courseId);
 				if (studentGrades != null && assignment != null) {
 					for (GradeDetails grade : studentGrades) {
-						if (grade.getAssignmentName() != null && grade.getAssignmentName().equals(assignment.getTitle())) {
+						if (grade.getAssignmentName() != null
+								&& grade.getAssignmentName().equals(assignment.getTitle())) {
 							gradeForAssignment = grade;
 							break;
 						}
@@ -238,10 +242,10 @@ public class TeacherController {
 				assignmentGrades.add(null);
 			}
 		}
-				
+
 		HashMap<List<Student>, List<String>> list = new HashMap<>();
 		list.put(students, assignmentStatuses);
-		
+
 		theModel.addAttribute("list", list);
 		theModel.addAttribute("assignmentDetails", studentCourseAssignmentDetails);
 		theModel.addAttribute("students", students);
@@ -253,9 +257,9 @@ public class TeacherController {
 
 		return "teacher/teacher-assignment-status";
 	}
-	
-	
-	
+
+	// This line means nothing
+
 	@GetMapping("/{teacherId}/courses/{courseId}/assignments/{assignmentId}/delete")
 	public String deleteAssignment(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
 			@PathVariable("assignmentId") int assignmentId) {
@@ -305,21 +309,23 @@ public class TeacherController {
 	}
 
 	@GetMapping("/{teacherId}/courses/{courseId}/addNewAssignment")
-	public String addNewAssignment(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
+	public String addNewAssignment(@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId,
+			Model theModel) {
 		Assignment assignment = new Assignment();
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
 		List<Course> courses = teacher.getCourses();
-		
+
 		theModel.addAttribute("assignment", assignment);
 		theModel.addAttribute("teacher", teacher);
 		theModel.addAttribute("course", courseService.findCourseById(courseId));
 		theModel.addAttribute("courses", courses);
-		
+
 		return "teacher/assignment-form";
 	}
-	
+
 	@PostMapping("/{teacherId}/courses/{courseId}/addNewAssignment/save")
-	public String saveAssignment(@Valid @ModelAttribute("assignment") Assignment assignment, BindingResult theBindingResult,
+	public String saveAssignment(@Valid @ModelAttribute("assignment") Assignment assignment,
+			BindingResult theBindingResult,
 			@PathVariable("teacherId") int teacherId, @PathVariable("courseId") int courseId, Model theModel) {
 
 		Teacher teacher = teacherService.findByTeacherId(teacherId);
@@ -342,28 +348,25 @@ public class TeacherController {
 
 		// assignment.setDaysRemaining(findDayDifference(assignment));
 		assignmentService.save(assignment);
-		
+
 		Course course = courseService.findCourseById(courseId);
 		List<Student> students = course.getStudents();
-		
-		for(Student student : students) {
-			StudentCourseDetails studentCourseDetails = studentCourseDetailsService.findByStudentAndCourseId(student.getId(), courseId);
+
+		for (Student student : students) {
+			StudentCourseDetails studentCourseDetails = studentCourseDetailsService
+					.findByStudentAndCourseId(student.getId(), courseId);
 			AssignmentDetails assignmentDetail = new AssignmentDetails();
 			assignmentDetail.setAssignmentId(assignment.getId());
 			assignmentDetail.setStudentCourseDetailsId(studentCourseDetails.getId());
 			assignmentDetail.setIsDone(0);
 			assignmentDetailsService.save(assignmentDetail);
 		}
-		
-		
+
 		theModel.addAttribute("teacher", teacher);
-		
+
 		return "redirect:/teacher/" + teacherId + "/courses/" + courseId;
 	}
-	
-	
-	
-	
+
 	private int findDayDifference(Assignment assignment) {
 		String dateString = assignment.getDueDate();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -380,6 +383,5 @@ public class TeacherController {
 
 		return -1;
 	}
-	
-}
 
+}
